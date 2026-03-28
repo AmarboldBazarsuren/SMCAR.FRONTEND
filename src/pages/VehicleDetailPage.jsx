@@ -1,6 +1,6 @@
 // Файл: frontend/src/pages/VehicleDetailPage.jsx
 // Үүрэг: Encar машины дэлгэрэнгүй хуудас + татвар тооцоолол
-// Дизайн: Image 5, 6 загвар - зураг, мэдээлэл, үнийн хүснэгт
+// Шинэ backend: vehicle.photos[], vehicle.firstPhoto, vehicle.manufacturer, vehicle.displacement гэх мэт
 
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
@@ -33,7 +33,7 @@ export default function VehicleDetailPage() {
       if (data.success) {
         setVehicle(data.data)
         setPricing(data.pricing)
-        console.log('✅ Машин мэдээлэл ачааллаа:', data.data?.title)
+        console.log('✅ Машин мэдээлэл ачааллаа:', data.data?.manufacturer, data.data?.model)
       } else {
         setError('Машин мэдээлэл татаж чадсангүй')
       }
@@ -68,17 +68,23 @@ export default function VehicleDetailPage() {
     )
   }
 
-  const images = vehicle.images || (vehicle.image_url ? [vehicle.image_url] : [])
-  const title = vehicle.title || `${vehicle.brand} ${vehicle.model}`
+  // Шинэ backend-ийн өгөгдлийн бүтэц:
+  // vehicle.photos[] - бүх зургийн URL жагсаалт
+  // vehicle.firstPhoto - үндсэн зураг
+  // vehicle.manufacturer, vehicle.model, vehicle.grade
+  // vehicle.displacement - хөдөлгүүрийн cc
+  // vehicle.fuel - түлшний төрөл
+  // vehicle.priceKRW - вон дахь үнэ
+  const images = vehicle.photos || (vehicle.firstPhoto ? [vehicle.firstPhoto] : [])
+  const title = `${vehicle.manufacturer || ''} ${vehicle.model || ''} ${vehicle.grade || ''}`.trim()
 
-  // Машины үндсэн мэдээлэл
   const specs = [
     { label: 'Он', value: vehicle.year },
     { label: 'Гүйлт', value: vehicle.mileage ? formatMileage(vehicle.mileage) : null },
-    { label: 'Хөдөлгүүр', value: vehicle.engine_size ? formatCC(parseInt(vehicle.engine_size)) : null },
-    { label: 'Хурдны хайрцаг', value: vehicle.transmission },
-    { label: 'Түлш', value: vehicle.fuel_type },
-    { label: 'Өнгө', value: vehicle.color },
+    { label: 'Хөдөлгүүр', value: vehicle.displacement ? formatCC(vehicle.displacement) : null },
+    { label: 'Түлш', value: vehicle.fuel },
+    { label: 'Загварын бүлэг', value: vehicle.modelGroup },
+    { label: 'Байршил', value: vehicle.officeCityState },
   ].filter(s => s.value)
 
   return (
@@ -86,7 +92,7 @@ export default function VehicleDetailPage() {
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Breadcrumb - Image 5 загвар */}
+        {/* Breadcrumb */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2 text-sm text-gray-400">
             <Link to="/vehicles" className="flex items-center gap-1 hover:text-white transition-colors">
@@ -96,24 +102,29 @@ export default function VehicleDetailPage() {
             <span>/</span>
             <Link to="/" className="hover:text-white">Нүүр хуудас</Link>
             <span>/</span>
-            <Link to={`/vehicles?brand=${vehicle.brand}`} className="hover:text-white">{vehicle.brand}</Link>
+            <Link
+              to={`/vehicles?manufacturer=${vehicle.manufacturer}`}
+              className="hover:text-white"
+            >
+              {vehicle.manufacturer}
+            </Link>
             <span>/</span>
             <span className="text-white">{title}</span>
           </div>
-          {vehicle.encar_url && (
-            <a
-              href={vehicle.encar_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-primary text-sm hover:underline"
-            >
-              <span className="font-bold italic">Encar</span> дээрх зарыг харах
-              <ExternalLink size={12} />
-            </a>
-          )}
+
+          {/* Encar.com дээрх зарыг харах */}
+          <a
+            href={`https://www.encar.com/dc/dc_cardetailview.do?carid=${vehicle.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-primary text-sm hover:underline"
+          >
+            <span className="font-bold italic">Encar</span> дээрх зарыг харах
+            <ExternalLink size={12} />
+          </a>
         </div>
 
-        {/* Үндсэн layout: зураг (зүүн) + үнэ (баруун) */}
+        {/* Үндсэн layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Зүүн хэсэг: Зургийн gallery */}
           <div className="lg:col-span-2">
@@ -122,12 +133,11 @@ export default function VehicleDetailPage() {
               {images.length > 0 ? (
                 <>
                   <img
-                    src={typeof images[activeImg] === 'string' ? images[activeImg] : images[activeImg]?.url}
+                    src={images[activeImg]}
                     alt={title}
                     className="w-full h-full object-cover"
                     onError={e => { e.target.src = '' }}
                   />
-                  {/* Навигация товч */}
                   {images.length > 1 && (
                     <>
                       <button
@@ -142,6 +152,10 @@ export default function VehicleDetailPage() {
                       >
                         <ChevronRight size={20} />
                       </button>
+                      {/* Зургийн тоолуур */}
+                      <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                        {activeImg + 1} / {images.length}
+                      </div>
                     </>
                   )}
                 </>
@@ -152,72 +166,46 @@ export default function VehicleDetailPage() {
               )}
             </div>
 
-            {/* Thumb зургууд */}
+            {/* Thumbnail зургууд */}
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {images.slice(0, 10).map((img, i) => (
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveImg(i)}
                     className={`flex-shrink-0 w-20 h-16 rounded overflow-hidden border-2 transition-colors ${
-                      i === activeImg ? 'border-primary' : 'border-transparent'
+                      i === activeImg ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
                     <img
-                      src={typeof img === 'string' ? img : img?.url}
+                      src={img}
                       alt=""
                       className="w-full h-full object-cover"
                     />
                   </button>
                 ))}
-                {images.length > 10 && (
-                  <div className="flex-shrink-0 w-20 h-16 rounded bg-dark-card flex items-center justify-center text-gray-400 text-sm border border-white/10">
-                    +{images.length - 10}
-                  </div>
-                )}
               </div>
             )}
 
-            {/* Машины нэр + үндсэн спец */}
+            {/* Машины нэр + үндсэн спек */}
             <div className="mt-6">
-              <h1 className="text-white font-bold text-2xl mb-3">{title}</h1>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-400 mb-6">
+              <h1 className="text-white font-bold text-2xl mb-1">{title}</h1>
+              <p className="text-gray-500 text-sm mb-4">ID: {vehicle.id}</p>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                 {specs.map(s => (
-                  <span key={s.label}>
-                    <span className="text-gray-500">{s.label}:</span>{' '}
-                    <span className="text-white font-medium">{s.value}</span>
-                  </span>
+                  <div key={s.label} className="bg-dark-card rounded-lg p-3 border border-white/5">
+                    <div className="text-gray-500 text-xs mb-0.5">{s.label}</div>
+                    <div className="text-white font-semibold text-sm">{s.value}</div>
+                  </div>
                 ))}
               </div>
-
-              {/* Үзлэг оношилгооны мэдээлэл */}
-              {vehicle.inspection && (
-                <div className="bg-dark-card rounded-lg p-5 border border-white/5">
-                  <h3 className="text-white font-semibold mb-3">Үзлэг оношилгооны мэдээлэл</h3>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    {Object.entries(vehicle.inspection).map(([key, val]) => (
-                      <div key={key} className="flex justify-between">
-                        <span className="text-gray-400">{key}:</span>
-                        <span className="text-white">{val}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Тайлбар */}
-              {vehicle.description && (
-                <div className="mt-4 bg-dark-card rounded-lg p-5 border border-white/5">
-                  <h3 className="text-white font-semibold mb-2">Тайлбар</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{vehicle.description}</p>
-                </div>
-              )}
             </div>
           </div>
 
           {/* Баруун хэсэг: Үнийн хүснэгт */}
           <div className="lg:col-span-1">
-            <PricingBreakdown pricing={pricing} priceKRW={vehicle.price} />
+            <PricingBreakdown pricing={pricing} priceKRW={vehicle.priceKRW} />
           </div>
         </div>
       </div>

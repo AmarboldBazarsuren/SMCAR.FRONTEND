@@ -1,20 +1,25 @@
 // Файл: frontend/src/pages/VehicleListPage.jsx
-// Үүрэг: Encar машинуудын жагсаалт, шүүлтүүр, хайлт
+// Үүрэг: Encar машинуудын жагсаалт, шүүлтүүр
+// Шинэ backend params: manufacturer, modelGroup, year_min, year_max, fuelType, limit, offset
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Search, ChevronDown, Filter } from 'lucide-react'
+import { Filter } from 'lucide-react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import VehicleCard from '../components/VehicleCard.jsx'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
 import { getEncarVehicles, getManualVehicles } from '../services/vehicleService.js'
 
-const BRANDS = ['Kia', 'Hyundai', 'Mercedes-Benz', 'BMW', 'Genesis', 'Chevrolet',
-  'Renault', 'Audi', 'Porsche', 'Mini', 'Land Rover', 'Volvo', 'Lexus', 'Toyota',
-  'Ford', 'Jeep', 'Tesla']
+const MANUFACTURERS = [
+  'Hyundai', 'Kia', 'Genesis', 'Chevrolet', 'Renault Korea',
+  'BMW', 'Mercedes-Benz', 'Audi', 'Volkswagen', 'Porsche',
+  'Toyota', 'Honda', 'Lexus', 'Land Rover', 'Volvo',
+  'Ford', 'Jeep', 'Mini',
+]
 
-const FUEL_TYPES = ['Gasoline', 'Diesel', 'Electric', 'Hybrid']
+const FUEL_TYPES = ['가솔린', '디젤', '전기', '하이브리드']
+const FUEL_LABELS = { '가솔린': 'Бензин', '디젤': 'Дизель', '전기': 'Цахилгаан', '하이브리드': 'Хибрид' }
 
 export default function VehicleListPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -25,14 +30,12 @@ export default function VehicleListPage() {
   const [offset, setOffset] = useState(0)
   const LIMIT = 20
 
-  // Шүүлтүүр state
   const [filters, setFilters] = useState({
-    brand: searchParams.get('brand') || '',
-    model: searchParams.get('model') || '',
+    manufacturer: searchParams.get('manufacturer') || searchParams.get('brand') || '',
+    modelGroup: searchParams.get('modelGroup') || searchParams.get('model') || '',
     year_min: searchParams.get('year_min') || '',
     year_max: searchParams.get('year_max') || '',
-    price_min: searchParams.get('price_min') || '',
-    price_max: searchParams.get('price_max') || '',
+    fuelType: searchParams.get('fuelType') || '',
   })
   const [showFilters, setShowFilters] = useState(false)
 
@@ -48,17 +51,21 @@ export default function VehicleListPage() {
 
       const [encarRes, manualRes] = await Promise.allSettled([
         getEncarVehicles(params),
-        getManualVehicles({ brand: filters.brand, limit: 6 }),
+        getManualVehicles({ brand: filters.manufacturer, limit: 4 }),
       ])
 
       if (encarRes.status === 'fulfilled') {
         const data = encarRes.value
-        setVehicles(data.data || [])
+        if (newOffset === 0) {
+          setVehicles(data.data || [])
+        } else {
+          setVehicles(prev => [...prev, ...(data.data || [])])
+        }
         setTotal(data.total || 0)
         console.log(`✅ ${data.data?.length} машин ачааллаа (Нийт: ${data.total})`)
       } else {
         console.error('❌ Encar машин ачааллахад алдаа:', encarRes.reason?.message)
-        setVehicles([])
+        if (newOffset === 0) setVehicles([])
       }
 
       if (manualRes.status === 'fulfilled') {
@@ -78,13 +85,12 @@ export default function VehicleListPage() {
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }))
-    // URL params шинэчлэх
     const newParams = { ...filters, [key]: value }
     setSearchParams(Object.fromEntries(Object.entries(newParams).filter(([, v]) => v !== '')))
   }
 
   const clearFilters = () => {
-    setFilters({ brand: '', model: '', year_min: '', year_max: '', price_min: '', price_max: '' })
+    setFilters({ manufacturer: '', modelGroup: '', year_min: '', year_max: '', fuelType: '' })
     setSearchParams({})
   }
 
@@ -95,6 +101,7 @@ export default function VehicleListPage() {
   }
 
   const hasMore = offset + LIMIT < total
+  const activeFilterCount = Object.values(filters).filter(v => v !== '').length
 
   return (
     <div className="min-h-screen bg-dark">
@@ -105,10 +112,10 @@ export default function VehicleListPage() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-white font-bold text-2xl">
-              {filters.brand ? `${filters.brand} машинууд` : 'Бүх машинууд'}
+              {filters.manufacturer ? `${filters.manufacturer} машинууд` : 'Бүх машинууд'}
             </h1>
             <p className="text-gray-400 text-sm mt-1">
-              Нийт <span className="text-white font-medium">{total.toLocaleString()}</span> машин олдлоо
+              Нийт <span className="text-white font-medium">{total.toLocaleString()}</span> машин
             </p>
           </div>
           <button
@@ -117,41 +124,41 @@ export default function VehicleListPage() {
           >
             <Filter size={14} />
             Шүүлтүүр
-            {Object.values(filters).some(v => v !== '') && (
+            {activeFilterCount > 0 && (
               <span className="bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                {Object.values(filters).filter(v => v !== '').length}
+                {activeFilterCount}
               </span>
             )}
           </button>
         </div>
 
-        {/* Шүүлтүүр хэсэг */}
+        {/* Шүүлтүүр */}
         {showFilters && (
           <div className="bg-dark-card border border-white/10 rounded-lg p-5 mb-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              {/* Брэнд */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {/* Үйлдвэрлэгч */}
               <div>
-                <label className="text-gray-400 text-xs mb-1 block">Брэнд</label>
+                <label className="text-gray-400 text-xs mb-1 block">Үйлдвэрлэгч</label>
                 <select
-                  value={filters.brand}
-                  onChange={e => handleFilterChange('brand', e.target.value)}
+                  value={filters.manufacturer}
+                  onChange={e => handleFilterChange('manufacturer', e.target.value)}
                   className="input-field text-sm"
                 >
                   <option value="">Бүгд</option>
-                  {BRANDS.map(b => (
+                  {MANUFACTURERS.map(b => (
                     <option key={b} value={b}>{b}</option>
                   ))}
                 </select>
               </div>
 
-              {/* Загвар */}
+              {/* Загварын бүлэг */}
               <div>
                 <label className="text-gray-400 text-xs mb-1 block">Загвар</label>
                 <input
                   type="text"
                   placeholder="Жишээ: Tucson"
-                  value={filters.model}
-                  onChange={e => handleFilterChange('model', e.target.value)}
+                  value={filters.modelGroup}
+                  onChange={e => handleFilterChange('modelGroup', e.target.value)}
                   className="input-field text-sm"
                 />
               </div>
@@ -165,7 +172,7 @@ export default function VehicleListPage() {
                   value={filters.year_min}
                   onChange={e => handleFilterChange('year_min', e.target.value)}
                   className="input-field text-sm"
-                  min="2000" max="2025"
+                  min="2000" max="2026"
                 />
               </div>
 
@@ -178,32 +185,23 @@ export default function VehicleListPage() {
                   value={filters.year_max}
                   onChange={e => handleFilterChange('year_max', e.target.value)}
                   className="input-field text-sm"
-                  min="2000" max="2025"
+                  min="2000" max="2026"
                 />
               </div>
 
-              {/* Үнэ min */}
+              {/* Түлш */}
               <div>
-                <label className="text-gray-400 text-xs mb-1 block">Үнэ min (₩)</label>
-                <input
-                  type="number"
-                  placeholder="10000000"
-                  value={filters.price_min}
-                  onChange={e => handleFilterChange('price_min', e.target.value)}
+                <label className="text-gray-400 text-xs mb-1 block">Түлш</label>
+                <select
+                  value={filters.fuelType}
+                  onChange={e => handleFilterChange('fuelType', e.target.value)}
                   className="input-field text-sm"
-                />
-              </div>
-
-              {/* Үнэ max */}
-              <div>
-                <label className="text-gray-400 text-xs mb-1 block">Үнэ max (₩)</label>
-                <input
-                  type="number"
-                  placeholder="100000000"
-                  value={filters.price_max}
-                  onChange={e => handleFilterChange('price_max', e.target.value)}
-                  className="input-field text-sm"
-                />
+                >
+                  <option value="">Бүгд</option>
+                  {FUEL_TYPES.map(f => (
+                    <option key={f} value={f}>{FUEL_LABELS[f]}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -216,28 +214,28 @@ export default function VehicleListPage() {
         )}
 
         {/* Идэвхтэй шүүлтүүрийн tag-ууд */}
-        {Object.entries(filters).some(([, v]) => v !== '') && (
+        {activeFilterCount > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {Object.entries(filters).filter(([, v]) => v !== '').map(([key, val]) => (
               <span
                 key={key}
                 className="flex items-center gap-1 bg-primary/20 text-primary text-xs px-3 py-1 rounded-full"
               >
-                {key}: {val}
+                {val}
                 <button onClick={() => handleFilterChange(key, '')} className="hover:text-white ml-1">×</button>
               </span>
             ))}
           </div>
         )}
 
-        {/* Admin гараар нэмсэн машинууд (жагсаалтын дээр) */}
+        {/* Admin гараар нэмсэн машинууд */}
         {manualVehicles.length > 0 && (
           <div className="mb-8">
             <h2 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
               <span className="badge-red">МАНАЙ</span>
               Санал болгох машинууд
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {manualVehicles.map(v => (
                 <VehicleCard key={v._id} vehicle={v} type="manual" />
               ))}
@@ -247,13 +245,11 @@ export default function VehicleListPage() {
         )}
 
         {/* Encar машинуудын жагсаалт */}
-        <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
-          <span>Encar.com-оос</span>
-          <span className="w-4 h-px bg-gray-700" />
-          <span>{total.toLocaleString()} машин</span>
+        <div className="mb-4 text-sm text-gray-500">
+          Encar.com-оос · {total.toLocaleString()} машин
         </div>
 
-        {loading ? (
+        {loading && vehicles.length === 0 ? (
           <LoadingSpinner text="Солонгосоос машин хайж байна..." />
         ) : vehicles.length === 0 ? (
           <div className="text-center py-20 text-gray-500">
@@ -277,9 +273,9 @@ export default function VehicleListPage() {
                 <button
                   onClick={loadMore}
                   disabled={loading}
-                  className="btn-secondary px-10"
+                  className="btn-secondary px-10 disabled:opacity-50"
                 >
-                  Цааш харах ({total - offset - LIMIT > 0 ? total - offset - LIMIT : 0} машин үлдсэн)
+                  {loading ? 'Ачааллаж байна...' : `Цааш харах (${total - offset - vehicles.length} машин үлдсэн)`}
                 </button>
               </div>
             )}

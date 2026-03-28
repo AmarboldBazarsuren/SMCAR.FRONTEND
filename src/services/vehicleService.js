@@ -9,7 +9,7 @@ import api from './api.js'
 
 /**
  * Encar машинуудын жагсаалт татах
- * @param {Object} filters - brand, model, year_min, year_max, limit, offset
+ * Шинэ params: manufacturer, modelGroup, year_min, year_max, fuelType, limit, offset
  */
 export const getEncarVehicles = async (filters = {}) => {
   console.log('🔍 Encar машин жагсаалт татаж байна...', filters)
@@ -18,8 +18,8 @@ export const getEncarVehicles = async (filters = {}) => {
 }
 
 /**
- * Encar машины дэлгэрэнгүй + татвар тооцоолол
- * @param {string} id - Машины ID
+ * Encar машины дэлгэрэнгүй + бүх зураг + татвар тооцоолол
+ * Буцаана: { id, manufacturer, model, grade, photos[], firstPhoto, displacement, fuel, priceKRW, ... }
  */
 export const getEncarVehicleDetail = async (id) => {
   console.log(`🔍 Encar машин дэлгэрэнгүй татаж байна: ID ${id}`)
@@ -52,11 +52,27 @@ export const getBrands = async () => {
 }
 
 /**
- * Тооцоолол
+ * Брэндийн загваруудын жагсаалт (encar.mn/api/model-groups-аас)
+ */
+export const getModelsByBrand = async (brand) => {
+  const response = await api.get(`/vehicles/brands/${brand}/models`)
+  return response.data
+}
+
+/**
+ * Үнэ тооцоолох
  * @param {Object} body - { priceKRW, year, engineCC }
  */
 export const calculatePrice = async (body) => {
   const response = await api.post('/vehicles/calculate-price', body)
+  return response.data
+}
+
+/**
+ * Валютын ханш (encar.mn-оос шууд)
+ */
+export const getExchangeRate = async () => {
+  const response = await api.get('/exchange-rate')
   return response.data
 }
 

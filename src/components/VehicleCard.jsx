@@ -8,16 +8,23 @@ export default function VehicleCard({ vehicle, type = 'encar' }) {
   const id = isManual ? vehicle._id : vehicle.id
   const href = isManual ? `/vehicles/manual/${id}` : `/vehicles/encar/${id}`
 
-  const title = vehicle.title || `${vehicle.brand} ${vehicle.model}`
+  // Гарчиг
+  const title = isManual
+    ? vehicle.title
+    : `${vehicle.manufacturer || ''} ${vehicle.model || ''}`.trim()
+
   const year = vehicle.year
   const mileage = vehicle.mileage
+
+  // Зураг - шинэ backend: firstPhoto эсвэл photos[0]
   const imageUrl = isManual
     ? vehicle.images?.[0]?.url
-    : vehicle.image_url
+    : vehicle.firstPhoto || vehicle.photos?.[0] || null
 
+  // Үнэ
   const price = isManual
     ? vehicle.totalPriceMNT
-    : vehicle.priceMNT || (vehicle.price ? vehicle.price * 2.43 : null)
+    : vehicle.priceMNT
 
   return (
     <Link to={href} className="vehicle-card group block">
