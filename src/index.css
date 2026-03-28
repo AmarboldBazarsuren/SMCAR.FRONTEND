@@ -1,0 +1,91 @@
+/* Файл: frontend/src/index.css */
+/* Үүрэг: Global CSS - Tailwind import + custom styles */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-dark text-white font-sans;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Scrollbar загвар */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-secondary;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-600 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary;
+  }
+}
+
+@layer components {
+  /* Үндсэн товч */
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white font-semibold 
+           px-6 py-3 rounded transition-colors duration-200 
+           inline-flex items-center justify-center gap-2 cursor-pointer;
+  }
+
+  .btn-secondary {
+    @apply border border-white/20 hover:border-white/50 text-white 
+           font-semibold px-6 py-3 rounded transition-colors duration-200
+           inline-flex items-center justify-center gap-2 cursor-pointer;
+  }
+
+  /* Машины карт */
+  .vehicle-card {
+    @apply bg-dark-card rounded-lg overflow-hidden 
+           hover:ring-1 hover:ring-primary/50 
+           transition-all duration-200 cursor-pointer;
+  }
+
+  /* Хүснэгтийн мөр */
+  .table-row-hover {
+    @apply hover:bg-white/5 transition-colors duration-150;
+  }
+
+  /* Input талбар */
+  .input-field {
+    @apply bg-dark-secondary border border-white/10 rounded px-4 py-2.5 
+           text-white placeholder-gray-500 w-full
+           focus:outline-none focus:border-primary/50 
+           transition-colors duration-200;
+  }
+
+  /* Мэдэгдэл label */
+  .badge-red {
+    @apply bg-primary/20 text-primary text-xs font-semibold 
+           px-2 py-0.5 rounded uppercase tracking-wider;
+  }
+}
+
+/* Swiper custom override */
+.swiper-pagination-bullet {
+  background: rgba(255,255,255,0.4) !important;
+  opacity: 1 !important;
+}
+.swiper-pagination-bullet-active {
+  background: #E31E24 !important;
+}
+.swiper-button-next,
+.swiper-button-prev {
+  color: white !important;
+}
