@@ -6,7 +6,7 @@ import axios from 'axios'
 
 // Axios instance үүсгэх
 const api = axios.create({
-  baseURL: '/api', // vite.config.js дахь proxy: localhost:5000 руу чиглүүлнэ
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
