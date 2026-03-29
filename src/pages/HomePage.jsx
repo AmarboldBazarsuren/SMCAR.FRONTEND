@@ -509,14 +509,14 @@ function FeaturedCarBanner({ car }) {
       </div>
       <div className="absolute right-0 top-0 bottom-0 w-72 bg-gradient-to-l from-black/95 via-black/80 to-transparent flex flex-col justify-center p-8">
         <span className="badge-red mb-3">ОНЦЛОХ МАШИН</span>
-        <h2 className="text-white font-bold text-2xl leading-tight mb-2">{car.manufacturer} {car.model}</h2>
+        <h2 className="text-black font-bold text-2xl leading-tight mb-2">{car.manufacturer} {car.model}</h2>
         <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-          <div><div className="text-gray-400 text-xs">ОН:</div><div className="text-white font-semibold">{car.year}</div></div>
-          <div><div className="text-gray-400 text-xs">ГҮЙЛТ:</div><div className="text-white font-semibold">{car.mileage?.toLocaleString()} км</div></div>
-          {car.fuelType && <div><div className="text-gray-400 text-xs">ТҮЛШ:</div><div className="text-white font-semibold">{car.fuelType}</div></div>}
+          <div><div className="text-gray-400 text-xs">ОН:</div><div className="text-black font-semibold">{car.year}</div></div>
+          <div><div className="text-gray-400 text-xs">ГҮЙЛТ:</div><div className="text-black font-semibold">{car.mileage?.toLocaleString()} км</div></div>
+          {car.fuelType && <div><div className="text-gray-400 text-xs">ТҮЛШ:</div><div className="text-black font-semibold">{car.fuelType}</div></div>}
         </div>
         {priceMNT && <div className="text-primary font-bold text-lg mb-4">{formatMNT(priceMNT)}</div>}
-        <Link to={`/vehicles/encar/${car.id}`} className="block w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded text-center transition-colors text-sm uppercase tracking-wider">
+        <Link to={`/vehicles/encar/${car.id}`} className="block w-full bg-primary hover:bg-primary-dark text-black font-bold py-3 rounded text-center transition-colors text-sm uppercase tracking-wider">
           ДЭЛГЭРЭНГҮЙ ҮЗЭХ
         </Link>
       </div>
@@ -545,7 +545,7 @@ function AdminBannerSlider({ banners }) {
         }
         {cur.title && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-            <h3 className="text-white font-bold text-lg">{cur.title}</h3>
+            <h3 className="text-black font-bold text-lg">{cur.title}</h3>
             {cur.description && <p className="text-gray-300 text-sm mt-1">{cur.description}</p>}
           </div>
         )}

@@ -50,7 +50,7 @@ export default function VehicleCard({ vehicle, type = 'encar' }) {
 
       {/* Мэдээлэл */}
       <div className="p-3">
-        <h3 className="text-white text-sm font-semibold line-clamp-1 mb-1">{title}</h3>
+        <h3 className="text-black text-sm font-semibold line-clamp-1 mb-1">{title}</h3>
         <div className="flex justify-between items-center text-xs text-gray-500 mb-2">
           <span>{year}он</span>
           {mileage && <span>{formatMileage(mileage)}</span>}
