@@ -3,8 +3,9 @@ import { useEffect } from 'react'
 import { X } from 'lucide-react'
 
 const CONTACT_INFO = {
-  phone: '+97689549988',
+  phone: '+97672220707',
   telegram: 'smcar_mn',
+  messenger: '61560313482250',
 }
 
 const CHANNELS = [
@@ -18,8 +19,7 @@ const CHANNELS = [
     ),
     color: 'bg-[#0084FF]',
     hoverColor: 'hover:bg-[#0073E6]',
-    getUrl: () => `https://m.me/${CONTACT_INFO.phone.replace('+', '')}`,
-  },
+getUrl: () => `https://m.me/${CONTACT_INFO.messenger}`,  },
   {
     id: 'whatsapp',
     name: 'WhatsApp',
