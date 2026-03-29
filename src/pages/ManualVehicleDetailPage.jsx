@@ -1,6 +1,4 @@
 // Файл: frontend/src/pages/ManualVehicleDetailPage.jsx
-// Өөрчлөлт: isManual={true} prop нэмсэн — гаалийн татвар харуулахгүй
-
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -19,24 +17,19 @@ export default function ManualVehicleDetailPage() {
   const [error, setError] = useState(null)
   const [activeImg, setActiveImg] = useState(0)
 
-  useEffect(() => {
-    loadVehicle()
-  }, [id])
+  useEffect(() => { loadVehicle() }, [id])
 
   const loadVehicle = async () => {
-    console.log(`🔍 Manual машин дэлгэрэнгүй: ID ${id}`)
     setLoading(true)
     try {
       const data = await getManualVehicleDetail(id)
       if (data.success) {
         setVehicle(data.data)
-        // Pricing-г хадгална ч гаалийн татвар харуулахгүй
         setPricing(data.pricing)
       } else {
         setError('Машин олдсонгүй')
       }
     } catch (err) {
-      console.error('❌ ManualVehicleDetail алдаа:', err.message)
       setError('Машин мэдээлэл татаж чадсангүй')
     } finally {
       setLoading(false)
@@ -44,16 +37,16 @@ export default function ManualVehicleDetailPage() {
   }
 
   if (loading) {
-    return <div className="min-h-screen bg-dark"><Navbar /><LoadingSpinner text="Ачааллаж байна..." /></div>
+    return <div className="min-h-screen bg-gray-50"><Navbar /><LoadingSpinner text="Ачааллаж байна..." /></div>
   }
 
   if (error || !vehicle) {
     return (
-      <div className="min-h-screen bg-dark">
+      <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
           <div className="text-4xl mb-4">😔</div>
-          <p className="text-gray-400 mb-6">{error}</p>
+          <p className="text-gray-500 mb-6">{error}</p>
           <Link to="/vehicles" className="btn-primary">← Буцах</Link>
         </div>
         <Footer />
@@ -72,28 +65,30 @@ export default function ManualVehicleDetailPage() {
   ].filter(s => s.value)
 
   return (
-    <div className="min-h-screen bg-dark">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-          <Link to="/vehicles" className="flex items-center gap-1 hover:text-white"><ArrowLeft size={14} />Буцах</Link>
+        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+          <Link to="/vehicles" className="flex items-center gap-1 hover:text-gray-900">
+            <ArrowLeft size={14} />Буцах
+          </Link>
           <span>/</span>
-          <Link to="/" className="hover:text-white">Нүүр хуудас</Link>
+          <Link to="/" className="hover:text-gray-900">Нүүр хуудас</Link>
           <span>/</span>
-          <span className="text-white">{vehicle.title}</span>
+          <span className="text-gray-900">{vehicle.title}</span>
         </div>
 
         {/* Монголд бэлэн label */}
-        <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-1.5 mb-4">
+        <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-1.5 mb-4">
           <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-          <span className="text-green-400 text-sm font-medium">Монголд бэлэн зарагдаж байна</span>
+          <span className="text-green-700 text-sm font-medium">Монголд бэлэн зарагдаж байна</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Зүүн: Зурагнууд */}
           <div className="lg:col-span-2">
-            <div className="relative bg-dark-card rounded-lg overflow-hidden aspect-[4/3] mb-3">
+            <div className="relative bg-white rounded-xl overflow-hidden aspect-[4/3] mb-3 border border-gray-200">
               {images.length > 0 ? (
                 <>
                   <img
@@ -105,13 +100,13 @@ export default function ManualVehicleDetailPage() {
                     <>
                       <button
                         onClick={() => setActiveImg(p => (p - 1 + images.length) % images.length)}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full"
                       >
                         <ChevronLeft size={20} />
                       </button>
                       <button
                         onClick={() => setActiveImg(p => (p + 1) % images.length)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full"
                       >
                         <ChevronRight size={20} />
                       </button>
@@ -119,7 +114,7 @@ export default function ManualVehicleDetailPage() {
                   )}
                 </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-600">🚗 Зураг байхгүй</div>
+                <div className="w-full h-full flex items-center justify-center text-gray-400">🚗 Зураг байхгүй</div>
               )}
             </div>
 
@@ -129,7 +124,9 @@ export default function ManualVehicleDetailPage() {
                   <button
                     key={i}
                     onClick={() => setActiveImg(i)}
-                    className={`flex-shrink-0 w-20 h-16 rounded overflow-hidden border-2 transition-colors ${i === activeImg ? 'border-primary' : 'border-transparent'}`}
+                    className={`flex-shrink-0 w-20 h-16 rounded overflow-hidden border-2 transition-colors ${
+                      i === activeImg ? 'border-primary' : 'border-gray-200'
+                    }`}
                   >
                     <img src={img.url} alt="" className="w-full h-full object-cover" />
                   </button>
@@ -138,29 +135,30 @@ export default function ManualVehicleDetailPage() {
             )}
 
             <div className="mt-6">
-              <h1 className="text-white font-bold text-2xl mb-3">{vehicle.title}</h1>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm mb-6">
+              <h1 className="text-gray-900 font-bold text-2xl mb-3">{vehicle.title}</h1>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                 {specs.map(s => (
-                  <span key={s.label}>
-                    <span className="text-gray-500">{s.label}:</span>{' '}
-                    <span className="text-white font-medium">{s.value}</span>
-                  </span>
+                  <div key={s.label} className="bg-white rounded-lg p-3 border border-gray-200">
+                    <div className="text-gray-400 text-xs mb-0.5">{s.label}</div>
+                    <div className="text-gray-900 font-semibold text-sm">{s.value}</div>
+                  </div>
                 ))}
               </div>
 
               {vehicle.description && (
-                <div className="bg-dark-card rounded-lg p-5 border border-white/5">
-                  <h3 className="text-white font-semibold mb-2">Тайлбар</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{vehicle.description}</p>
+                <div className="bg-white rounded-lg p-5 border border-gray-200">
+                  <h3 className="text-gray-900 font-semibold mb-2">Тайлбар</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{vehicle.description}</p>
                 </div>
               )}
 
               {vehicle.features?.length > 0 && (
-                <div className="mt-4 bg-dark-card rounded-lg p-5 border border-white/5">
-                  <h3 className="text-white font-semibold mb-3">Онцлог</h3>
+                <div className="mt-4 bg-white rounded-lg p-5 border border-gray-200">
+                  <h3 className="text-gray-900 font-semibold mb-3">Онцлог</h3>
                   <div className="flex flex-wrap gap-2">
                     {vehicle.features.map((f, i) => (
-                      <span key={i} className="bg-dark-secondary text-gray-300 text-xs px-3 py-1 rounded-full border border-white/10">
+                      <span key={i} className="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full border border-gray-200">
                         {f}
                       </span>
                     ))}
@@ -170,7 +168,7 @@ export default function ManualVehicleDetailPage() {
             </div>
           </div>
 
-          {/* Баруун: Үнийн хүснэгт — isManual=true тул гаалийн татвар харагдахгүй */}
+          {/* Баруун: Үнийн хүснэгт */}
           <div className="lg:col-span-1">
             <PricingBreakdown
               pricing={pricing}

@@ -1,7 +1,4 @@
 // Файл: frontend/src/pages/VehicleDetailPage.jsx
-// Үүрэг: Encar машины дэлгэрэнгүй хуудас + татвар тооцоолол
-// Шинэ backend: vehicle.photos[], vehicle.firstPhoto, vehicle.manufacturer, vehicle.displacement гэх мэт
-
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -20,12 +17,9 @@ export default function VehicleDetailPage() {
   const [error, setError] = useState(null)
   const [activeImg, setActiveImg] = useState(0)
 
-  useEffect(() => {
-    loadVehicle()
-  }, [id])
+  useEffect(() => { loadVehicle() }, [id])
 
   const loadVehicle = async () => {
-    console.log(`🔍 Encar машин дэлгэрэнгүй ачааллаж байна: ID ${id}`)
     setLoading(true)
     setError(null)
     try {
@@ -33,12 +27,10 @@ export default function VehicleDetailPage() {
       if (data.success) {
         setVehicle(data.data)
         setPricing(data.pricing)
-        console.log('✅ Машин мэдээлэл ачааллаа:', data.data?.manufacturer, data.data?.model)
       } else {
         setError('Машин мэдээлэл татаж чадсангүй')
       }
     } catch (err) {
-      console.error('❌ VehicleDetail ачааллахад алдаа:', err.message)
       setError('Машин олдсонгүй эсвэл сервертэй холбогдоход алдаа гарлаа')
     } finally {
       setLoading(false)
@@ -47,7 +39,7 @@ export default function VehicleDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark">
+      <div className="min-h-screen bg-gray-50">
         <Navbar />
         <LoadingSpinner text="Машин мэдээлэл ачааллаж байна..." />
       </div>
@@ -56,11 +48,11 @@ export default function VehicleDetailPage() {
 
   if (error || !vehicle) {
     return (
-      <div className="min-h-screen bg-dark">
+      <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
           <div className="text-4xl mb-4">😔</div>
-          <p className="text-gray-400 mb-6">{error || 'Машин олдсонгүй'}</p>
+          <p className="text-gray-500 mb-6">{error || 'Машин олдсонгүй'}</p>
           <Link to="/vehicles" className="btn-primary">← Жагсаалт руу буцах</Link>
         </div>
         <Footer />
@@ -68,13 +60,6 @@ export default function VehicleDetailPage() {
     )
   }
 
-  // Шинэ backend-ийн өгөгдлийн бүтэц:
-  // vehicle.photos[] - бүх зургийн URL жагсаалт
-  // vehicle.firstPhoto - үндсэн зураг
-  // vehicle.manufacturer, vehicle.model, vehicle.grade
-  // vehicle.displacement - хөдөлгүүрийн cc
-  // vehicle.fuel - түлшний төрөл
-  // vehicle.priceKRW - вон дахь үнэ
   const images = vehicle.photos || (vehicle.firstPhoto ? [vehicle.firstPhoto] : [])
   const title = `${vehicle.manufacturer || ''} ${vehicle.model || ''} ${vehicle.grade || ''}`.trim()
 
@@ -88,31 +73,27 @@ export default function VehicleDetailPage() {
   ].filter(s => s.value)
 
   return (
-    <div className="min-h-screen bg-dark">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Breadcrumb */}
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <Link to="/vehicles" className="flex items-center gap-1 hover:text-white transition-colors">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Link to="/vehicles" className="flex items-center gap-1 hover:text-gray-900 transition-colors">
               <ArrowLeft size={14} />
               Буцах
             </Link>
             <span>/</span>
-            <Link to="/" className="hover:text-white">Нүүр хуудас</Link>
+            <Link to="/" className="hover:text-gray-900">Нүүр хуудас</Link>
             <span>/</span>
-            <Link
-              to={`/vehicles?manufacturer=${vehicle.manufacturer}`}
-              className="hover:text-white"
-            >
+            <Link to={`/vehicles?manufacturer=${vehicle.manufacturer}`} className="hover:text-gray-900">
               {vehicle.manufacturer}
             </Link>
             <span>/</span>
-            <span className="text-white">{title}</span>
+            <span className="text-gray-900">{title}</span>
           </div>
 
-          {/* Encar.com дээрх зарыг харах */}
           <a
             href={`https://www.encar.com/dc/dc_cardetailview.do?carid=${vehicle.id}`}
             target="_blank"
@@ -124,12 +105,10 @@ export default function VehicleDetailPage() {
           </a>
         </div>
 
-        {/* Үндсэн layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Зүүн хэсэг: Зургийн gallery */}
+          {/* Зүүн хэсэг: Gallery */}
           <div className="lg:col-span-2">
-            {/* Үндсэн зураг */}
-            <div className="relative bg-dark-card rounded-lg overflow-hidden aspect-[4/3] mb-3">
+            <div className="relative bg-white rounded-xl overflow-hidden aspect-[4/3] mb-3 border border-gray-200">
               {images.length > 0 ? (
                 <>
                   <img
@@ -142,31 +121,30 @@ export default function VehicleDetailPage() {
                     <>
                       <button
                         onClick={() => setActiveImg(p => (p - 1 + images.length) % images.length)}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-colors"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-colors"
                       >
                         <ChevronLeft size={20} />
                       </button>
                       <button
                         onClick={() => setActiveImg(p => (p + 1) % images.length)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-colors"
                       >
                         <ChevronRight size={20} />
                       </button>
-                      {/* Зургийн тоолуур */}
-                      <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                      <div className="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded">
                         {activeImg + 1} / {images.length}
                       </div>
                     </>
                   )}
                 </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-600">
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
                   🚗 Зураг байхгүй
                 </div>
               )}
             </div>
 
-            {/* Thumbnail зургууд */}
+            {/* Thumbnails */}
             {images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {images.map((img, i) => (
@@ -174,29 +152,25 @@ export default function VehicleDetailPage() {
                     key={i}
                     onClick={() => setActiveImg(i)}
                     className={`flex-shrink-0 w-20 h-16 rounded overflow-hidden border-2 transition-colors ${
-                      i === activeImg ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'
+                      i === activeImg ? 'border-primary' : 'border-gray-200 opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img
-                      src={img}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Машины нэр + үндсэн спек */}
+            {/* Машины нэр + спек */}
             <div className="mt-6">
-              <h1 className="text-white font-bold text-2xl mb-1">{title}</h1>
-              <p className="text-gray-500 text-sm mb-4">ID: {vehicle.id}</p>
+              <h1 className="text-gray-900 font-bold text-2xl mb-1">{title}</h1>
+              <p className="text-gray-400 text-sm mb-4">ID: {vehicle.id}</p>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                 {specs.map(s => (
-                  <div key={s.label} className="bg-dark-card rounded-lg p-3 border border-white/5">
-                    <div className="text-gray-500 text-xs mb-0.5">{s.label}</div>
-                    <div className="text-white font-semibold text-sm">{s.value}</div>
+                  <div key={s.label} className="bg-white rounded-lg p-3 border border-gray-200">
+                    <div className="text-gray-400 text-xs mb-0.5">{s.label}</div>
+                    <div className="text-gray-900 font-semibold text-sm">{s.value}</div>
                   </div>
                 ))}
               </div>
@@ -205,7 +179,7 @@ export default function VehicleDetailPage() {
 
           {/* Баруун хэсэг: Үнийн хүснэгт */}
           <div className="lg:col-span-1">
-            <PricingBreakdown pricing={pricing} priceKRW={vehicle.priceKRW} />
+            <PricingBreakdown pricing={pricing} priceKRW={vehicle.priceKRW} vehicleId={vehicle.id} />
           </div>
         </div>
       </div>

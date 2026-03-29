@@ -1,7 +1,4 @@
 // Файл: frontend/src/pages/admin/AdminTaxPage.jsx
-// Үүрэг: Онцгой албан татварын хүснэгтийг admin-аас засах
-// Хөдөлгүүрийн хэмжээ × Машины нас → Татварын дүн
-
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { getTaxConfig, updateTaxConfig } from '../../services/adminService.js'
@@ -18,13 +15,10 @@ export default function AdminTaxPage() {
   useEffect(() => { loadTaxConfig() }, [])
 
   const loadTaxConfig = async () => {
-    console.log('📋 TaxConfig ачааллаж байна...')
     try {
       const data = await getTaxConfig()
       setEntries(data.data?.entries || [])
-      console.log(`✅ ${data.data?.entries?.length} татварын мөр ачааллаа`)
-    } catch (err) {
-      console.error('❌ TaxConfig ачааллахад алдаа:', err.message)
+    } catch {
       toast.error('Татварын тохиргоо татаж чадсангүй')
     } finally {
       setLoading(false)
@@ -37,62 +31,50 @@ export default function AdminTaxPage() {
 
   const handleSave = async () => {
     setSaving(true)
-    console.log('💾 TaxConfig хадгалж байна...')
     try {
-      // Тоон утгуудыг Number болгох
       const cleaned = entries.map(e => ({
         ...e,
-        engineMin: Number(e.engineMin),
-        engineMax: Number(e.engineMax),
-        tax0to3: Number(e.tax0to3),
-        tax4to6: Number(e.tax4to6),
-        tax7to9: Number(e.tax7to9),
-        tax10plus: Number(e.tax10plus),
+        engineMin: Number(e.engineMin), engineMax: Number(e.engineMax),
+        tax0to3: Number(e.tax0to3), tax4to6: Number(e.tax4to6),
+        tax7to9: Number(e.tax7to9), tax10plus: Number(e.tax10plus),
       }))
       await updateTaxConfig({ entries: cleaned })
       toast.success('Татварын хүснэгт хадгалагдлаа!')
-      console.log('✅ TaxConfig хадгалагдлаа')
-    } catch (err) {
-      console.error('❌ TaxConfig хадгалахад алдаа:', err.message)
+    } catch {
       toast.error('Хадгалахад алдаа гарлаа')
     } finally {
       setSaving(false)
     }
   }
 
-  if (loading) return <div className="p-8 text-gray-400">Ачааллаж байна...</div>
+  if (loading) return <div className="p-8 text-gray-500">Ачааллаж байна...</div>
 
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-white font-bold text-xl">Онцгой албан татварын хүснэгт</h1>
-        <p className="text-gray-400 text-sm mt-1">
+        <h1 className="text-gray-900 font-bold text-xl">Онцгой албан татварын хүснэгт</h1>
+        <p className="text-gray-500 text-sm mt-1">
           Хөдөлгүүрийн хэмжээ болон машины насаар татварын дүн тооцоологдоно.
-          Энд оруулсан утгуудаар автоматаар тооцоолно.
         </p>
       </div>
 
-      {/* Хүснэгт */}
-      <div className="bg-dark-card border border-white/10 rounded-xl overflow-hidden mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden mb-6">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-dark-secondary border-b border-white/10">
-              <th className="text-left px-5 py-3 text-gray-400 font-medium">Хөдөлгүүрийн хэмжээ</th>
+            <tr className="bg-gray-50 border-b border-gray-200">
+              <th className="text-left px-5 py-3 text-gray-600 font-medium">Хөдөлгүүрийн хэмжээ</th>
               {AGE_LABELS.map(label => (
-                <th key={label} className="text-left px-4 py-3 text-gray-400 font-medium">{label}</th>
+                <th key={label} className="text-left px-4 py-3 text-gray-600 font-medium">{label}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-gray-100">
             {entries.map((entry, idx) => (
-              <tr key={idx} className="table-row-hover">
-                {/* Хөдөлгүүрийн нэр */}
+              <tr key={idx} className="hover:bg-gray-50 transition-colors">
                 <td className="px-5 py-4">
-                  <div className="text-white font-medium text-sm">{entry.engineLabel}</div>
-                  <div className="text-gray-500 text-xs">{entry.engineMin}–{entry.engineMax === 999999 ? '∞' : entry.engineMax} cc</div>
+                  <div className="text-gray-900 font-medium text-sm">{entry.engineLabel}</div>
+                  <div className="text-gray-400 text-xs">{entry.engineMin}–{entry.engineMax === 999999 ? '∞' : entry.engineMax} cc</div>
                 </td>
-
-                {/* Татварын утгуудыг засах input */}
                 {AGE_KEYS.map(key => (
                   <td key={key} className="px-4 py-4">
                     <input
@@ -102,7 +84,7 @@ export default function AdminTaxPage() {
                       className="input-field text-sm w-32"
                       min="0"
                     />
-                    <div className="text-gray-600 text-xs mt-0.5">{formatMNT(entry[key])}</div>
+                    <div className="text-gray-400 text-xs mt-0.5">{formatMNT(entry[key])}</div>
                   </td>
                 ))}
               </tr>
@@ -111,18 +93,15 @@ export default function AdminTaxPage() {
         </table>
       </div>
 
-      {/* Тайлбар */}
-      <div className="bg-dark-secondary border border-white/5 rounded-lg p-4 mb-6 text-sm text-gray-400">
-        <p className="font-medium text-white mb-2">📋 Хэрхэн тооцоологддог вэ?</p>
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 text-sm text-gray-500">
+        <p className="font-medium text-gray-900 mb-2">📋 Хэрхэн тооцоологддог вэ?</p>
         <ul className="space-y-1">
           <li>• Машины хөдөлгүүрийн cc болон одоогоос хэдэн жилийн өмнөх гэдгийг тодорхойлно</li>
           <li>• Хүснэгтэд тохирох нүднээс татварын дүнг авна</li>
-          <li>• Энэ дүн нь нийт үнийн тооцооллын хэсэг болно</li>
           <li>• Жишээ: 2022 оны 1991cc машин → 0–3 жил, 1501–2500cc нүд → ₮2,300,000</li>
         </ul>
       </div>
 
-      {/* Хадгалах */}
       <div className="flex justify-end">
         <button onClick={handleSave} disabled={saving} className="btn-primary px-8 disabled:opacity-50">
           {saving ? 'Хадгалж байна...' : '💾 Татварын хүснэгт хадгалах'}

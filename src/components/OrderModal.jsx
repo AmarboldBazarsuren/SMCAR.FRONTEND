@@ -1,15 +1,10 @@
 // Файл: frontend/src/components/OrderModal.jsx
-// Үүрэг: "Захиалга өгөх" дарахад гарах modal — холбоо барих сувгууд
-
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
 
-// ============================================================
-// ТОХИРГОО — Энд өөрийн дугаар/холбоосоо оруулна
-// ============================================================
 const CONTACT_INFO = {
-  phone: '+97689549988',          // Утасны дугаар (messenger, whatsapp)
-  telegram: 'smcar_mn',           // Telegram username (@гүйгүй)
+  phone: '+97689549988',
+  telegram: 'smcar_mn',
 }
 
 const CHANNELS = [
@@ -23,7 +18,6 @@ const CHANNELS = [
     ),
     color: 'bg-[#0084FF]',
     hoverColor: 'hover:bg-[#0073E6]',
-    label: 'Facebook Messenger',
     getUrl: () => `https://m.me/${CONTACT_INFO.phone.replace('+', '')}`,
   },
   {
@@ -36,7 +30,6 @@ const CHANNELS = [
     ),
     color: 'bg-[#25D366]',
     hoverColor: 'hover:bg-[#20BD5C]',
-    label: 'WhatsApp',
     getUrl: () => `https://wa.me/${CONTACT_INFO.phone.replace('+', '')}`,
   },
   {
@@ -49,7 +42,6 @@ const CHANNELS = [
     ),
     color: 'bg-gray-600',
     hoverColor: 'hover:bg-gray-500',
-    label: 'Утасны дуудлага',
     getUrl: () => `tel:${CONTACT_INFO.phone}`,
   },
   {
@@ -62,20 +54,17 @@ const CHANNELS = [
     ),
     color: 'bg-[#229ED9]',
     hoverColor: 'hover:bg-[#1A8BBF]',
-    label: 'Telegram',
     getUrl: () => `https://t.me/${CONTACT_INFO.telegram}`,
   },
 ]
 
 export default function OrderModal({ isOpen, onClose, vehicleId }) {
-  // ESC дарахад хаах
   useEffect(() => {
     const handleKey = (e) => { if (e.key === 'Escape') onClose() }
     if (isOpen) document.addEventListener('keydown', handleKey)
     return () => document.removeEventListener('keydown', handleKey)
   }, [isOpen, onClose])
 
-  // Body scroll хаах
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
@@ -93,54 +82,41 @@ export default function OrderModal({ isOpen, onClose, vehicleId }) {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
-      {/* Modal */}
       <div
-        className="relative bg-dark-card border border-white/10 rounded-2xl w-full max-w-sm shadow-2xl"
+        className="relative bg-white border border-gray-200 rounded-2xl w-full max-w-sm shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
-        {/* Хаах товч */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
-        >
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors">
           <X size={18} />
         </button>
 
-        {/* Контент */}
         <div className="p-6">
-          {/* Гарчиг */}
           <div className="text-center mb-5">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-2xl">📞</span>
             </div>
-            <h2 className="text-white font-bold text-lg">Захиалга өгөх</h2>
+            <h2 className="text-gray-900 font-bold text-lg">Захиалга өгөх</h2>
           </div>
 
-          {/* Заавар */}
-          <div className="bg-dark-secondary rounded-xl p-4 mb-5 border border-white/5">
-            <p className="text-gray-300 text-sm leading-relaxed text-center">
+          <div className="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-200">
+            <p className="text-gray-600 text-sm leading-relaxed text-center">
               Та өөрийн сонирхосон машины дугаарыг copy хийж аван дараах сувгуудаас сонгон илгээнэ үү.
               Бид танд хурдан шуурхай хариулах болно.
             </p>
           </div>
 
-          {/* Машины дугаар copy */}
           {vehicleId && (
             <div className="mb-5">
-              <p className="text-gray-500 text-xs mb-2 text-center">Машины дугаар</p>
+              <p className="text-gray-400 text-xs mb-2 text-center">Машины дугаар</p>
               <button
                 onClick={handleCopyId}
-                className="w-full flex items-center justify-between bg-dark-secondary border border-white/10 hover:border-primary/40 rounded-lg px-4 py-3 transition-colors group"
+                className="w-full flex items-center justify-between bg-gray-50 border border-gray-200 hover:border-primary/40 rounded-lg px-4 py-3 transition-colors group"
               >
-                <span className="text-white font-mono text-sm font-semibold">{vehicleId}</span>
-                <span className="text-gray-500 group-hover:text-primary text-xs transition-colors flex items-center gap-1">
+                <span className="text-gray-900 font-mono text-sm font-semibold">{vehicleId}</span>
+                <span className="text-gray-400 group-hover:text-primary text-xs transition-colors flex items-center gap-1">
                   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
                     <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
                   </svg>
@@ -150,7 +126,6 @@ export default function OrderModal({ isOpen, onClose, vehicleId }) {
             </div>
           )}
 
-          {/* Холбоо барих сувгууд */}
           <div className="grid grid-cols-2 gap-3">
             {CHANNELS.map(ch => (
               <a
@@ -166,13 +141,9 @@ export default function OrderModal({ isOpen, onClose, vehicleId }) {
             ))}
           </div>
 
-          {/* Утасны дугаар текст */}
           <div className="mt-4 text-center">
-            <p className="text-gray-500 text-xs">Эсвэл шууд залгах:</p>
-            <a
-              href={`tel:${CONTACT_INFO.phone}`}
-              className="text-white font-semibold text-sm hover:text-primary transition-colors"
-            >
+            <p className="text-gray-400 text-xs">Эсвэл шууд залгах:</p>
+            <a href={`tel:${CONTACT_INFO.phone}`} className="text-gray-900 font-semibold text-sm hover:text-primary transition-colors">
               {CONTACT_INFO.phone}
             </a>
           </div>
