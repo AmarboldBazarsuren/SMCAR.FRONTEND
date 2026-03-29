@@ -1,125 +1,185 @@
 // Файл: frontend/src/components/PricingBreakdown.jsx
-// Image 3-ийн дагуу үнийн дэлгэрэнгүй харуулах
+// Өөрчлөлт: "Захиалга өгөх" дарахад OrderModal нээгдэнэ
 
+import { useState } from 'react'
 import { formatMNT, formatKRW } from '../utils/formatters.js'
+import OrderModal from './OrderModal.jsx'
 
-export default function PricingBreakdown({ pricing, priceKRW }) {
-  if (!pricing) {
+export default function PricingBreakdown({ pricing, priceKRW, isManual = false, vehicleId }) {
+  const [modalOpen, setModalOpen] = useState(false)
+
+  // ============================================================
+  // MANUAL машин — Гаалийн татваргүй
+  // ============================================================
+  if (isManual) {
     return (
-      <div className="bg-dark-card border border-white/10 rounded-xl p-6">
-        <h3 className="text-white font-bold text-lg mb-3">Үнийн тооцоолол</h3>
-        {priceKRW && (
-          <div className="flex justify-between mb-2">
-            <span className="text-gray-400 text-sm">Үндсэн үнэ (₩)</span>
-            <span className="text-white text-sm font-medium">{formatKRW(priceKRW)}</span>
+      <>
+        <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} vehicleId={vehicleId} />
+
+        <div className="bg-dark-card border border-white/10 rounded-xl p-5 sticky top-20">
+          <h3 className="text-white font-bold text-base mb-4">Үнийн мэдээлэл</h3>
+
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4">
+            <p className="text-primary text-xs font-medium">✅ Монголд бэлэн зарагдаж байна</p>
+            <p className="text-gray-400 text-xs mt-1">Энэ машин гаальд орохгүй — шууд авч болно</p>
           </div>
-        )}
-        <p className="text-gray-500 text-xs mt-3">
-          ⚠️ Хөдөлгүүрийн мэдээлэл дутуу тул нийт үнэ тооцоологдсонгүй
-        </p>
-      </div>
+
+          {priceKRW && (
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-300 text-sm">Солонгос дахь үнэ</span>
+                <span className="text-white text-sm font-semibold">{formatKRW(priceKRW)}</span>
+              </div>
+              {pricing && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300 text-sm">Ханш</span>
+                  <span className="text-gray-400 text-sm">1₩ = {pricing.wonToMNT}₮</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="border-t border-white/10 mt-4 pt-4">
+            <div className="flex justify-between items-center">
+              <span className="text-white font-bold text-sm">Нийт үнэ</span>
+              <span className="text-primary font-bold text-xl">
+                {pricing
+                  ? formatMNT(pricing.totalPriceMNT)
+                  : 'Тодорхойгүй'}
+              </span>
+            </div>
+            <p className="text-gray-500 text-xs mt-1">Гаалийн татвар, тээвэр багтаагүй</p>
+          </div>
+
+          <button
+            onClick={() => setModalOpen(true)}
+            className="btn-primary w-full mt-4 text-sm"
+          >
+            📞 Захиалга өгөх
+          </button>
+        </div>
+      </>
     )
   }
 
-  // Image 3-ийн дарааллаар мөрүүд
+  // ============================================================
+  // ENCAR — Хөдөлгүүрийн мэдээлэл дутуу үед
+  // ============================================================
+  if (!pricing) {
+    return (
+      <>
+        <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} vehicleId={vehicleId} />
+
+        <div className="bg-dark-card border border-white/10 rounded-xl p-6">
+          <h3 className="text-white font-bold text-lg mb-3">Үнийн тооцоолол</h3>
+          {priceKRW && (
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-400 text-sm">Үндсэн үнэ (₩)</span>
+              <span className="text-white text-sm font-medium">{formatKRW(priceKRW)}</span>
+            </div>
+          )}
+          <p className="text-gray-500 text-xs mt-3">
+            ⚠️ Хөдөлгүүрийн мэдээлэл дутуу тул нийт үнэ тооцоологдсонгүй
+          </p>
+          <button onClick={() => setModalOpen(true)} className="btn-primary w-full mt-4 text-sm">
+            📞 Захиалга өгөх
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  // ============================================================
+  // ENCAR — Бүрэн татварын тооцоолол
+  // ============================================================
   const rows = [
     {
       label: 'Үндсэн үнэ (₩)',
-      sub: null,
       value: formatKRW(pricing.priceKRW),
-      valueClass: 'text-white',
     },
     {
-      label: `Үндсэн үнэ (MNT)`,
+      label: 'Үндсэн үнэ (MNT)',
       sub: `1₩ = ${pricing.wonToMNT}₮`,
       value: formatMNT(pricing.basePriceMNT),
-      valueClass: 'text-white',
-      hint: '?',
+      hint: true,
     },
     {
       label: 'Монгол үйлчилгээний шимтгэл',
-      sub: null,
       value: formatMNT(pricing.mongolServiceFee),
-      valueClass: 'text-white',
-      hint: '?',
+      hint: true,
     },
     {
       label: 'Тээврийн зардал',
-      sub: null,
       value: formatMNT(pricing.shippingCost),
-      valueClass: 'text-white',
-      hint: '?',
+      hint: true,
     },
     {
       label: 'Онцгой албан татвар',
       sub: `${pricing.engineCC}cc · ${pricing.carAge} жил · ${pricing.fuelType || 'Бензин/Дизель'}`,
       value: formatMNT(pricing.exciseTax),
-      valueClass: 'text-white',
-      hint: '?',
+      hint: true,
     },
     {
       label: 'Гаалийн татвар/НӨАТ',
       sub: `Гааль ${pricing.customsDutyRate}% + НӨАТ ${pricing.vatRate}%`,
       value: formatMNT(pricing.totalCustomsAndVAT),
-      valueClass: 'text-white',
-      hint: '?',
+      hint: true,
     },
   ]
 
   return (
-    <div className="bg-dark-card border border-white/10 rounded-xl p-5 sticky top-20">
-      <h3 className="text-white font-bold text-base mb-1">VIN:</h3>
+    <>
+      <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} vehicleId={vehicleId} />
 
-      {/* VIN хэсэг байгаа бол */}
-      <div className="mb-4">
-        <p className="text-gray-500 text-xs">Машины VIN дугаар байгаа бол энд харагдана</p>
-      </div>
+      <div className="bg-dark-card border border-white/10 rounded-xl p-5 sticky top-20">
+        <h3 className="text-white font-bold text-base mb-4">Нийт үнийн тооцоолол</h3>
 
-      {/* Үнийн дэлгэрэнгүй — Image 3 загвараар */}
-      <div className="space-y-3">
-        {rows.map((row) => (
-          <div key={row.label} className="flex justify-between items-start gap-3">
-            <div className="flex items-start gap-1 min-w-0">
-              <div>
-                <span className="text-gray-300 text-sm">{row.label}</span>
-                {row.hint && (
-                  <span className="ml-1 text-gray-600 text-xs border border-gray-600 rounded-full w-4 h-4 inline-flex items-center justify-center cursor-help">?</span>
-                )}
+        <div className="space-y-3">
+          {rows.map((row) => (
+            <div key={row.label} className="flex justify-between items-start gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-300 text-sm">{row.label}</span>
+                  {row.hint && (
+                    <span className="text-gray-600 text-xs border border-gray-600 rounded-full w-4 h-4 inline-flex items-center justify-center cursor-help flex-shrink-0">?</span>
+                  )}
+                </div>
                 {row.sub && (
                   <div className="text-gray-500 text-xs mt-0.5">{row.sub}</div>
                 )}
               </div>
+              <span className="text-white text-sm font-semibold whitespace-nowrap">
+                {row.value}
+              </span>
             </div>
-            <span className={`${row.valueClass} text-sm font-semibold whitespace-nowrap`}>
-              {row.value}
-            </span>
+          ))}
+        </div>
+
+        <div className="border-t border-white/10 mt-4 pt-4">
+          <div className="flex justify-between items-center">
+            <span className="text-white font-bold text-sm">Нийт дүн</span>
+            <span className="text-primary font-bold text-xl">{formatMNT(pricing.totalPriceMNT)}</span>
           </div>
-        ))}
-      </div>
-
-      {/* Нийт дүн */}
-      <div className="border-t border-white/10 mt-4 pt-4">
-        <div className="flex justify-between items-center">
-          <span className="text-white font-bold text-sm">Нийт дүн</span>
-          <span className="text-primary font-bold text-xl">{formatMNT(pricing.totalPriceMNT)}</span>
         </div>
-      </div>
 
-      {/* Урьдчилгаа / Үлдэгдэл */}
-      <div className="mt-3 bg-dark-secondary rounded-lg p-3 space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Урьдчилгаа (85%)</span>
-          <span className="text-white font-semibold">{formatMNT(pricing.advancePaymentMNT)}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Үлдэгдэл (15%)</span>
-          <span className="text-white font-semibold">{formatMNT(pricing.remainingPaymentMNT)}</span>
-        </div>
-      </div>
+        {/* <div className="mt-3 bg-dark-secondary rounded-lg p-3 space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-400">Урьдчилгаа (85%)</span>
+            <span className="text-white font-semibold">{formatMNT(pricing.advancePaymentMNT)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-400">Үлдэгдэл (15%)</span>
+            <span className="text-white font-semibold">{formatMNT(pricing.remainingPaymentMNT)}</span>
+          </div>
+        </div> */}
 
-      <button className="btn-primary w-full mt-4 text-sm">
-        📞 Захиалга өгөх
-      </button>
-    </div>
+        <button
+          onClick={() => setModalOpen(true)}
+          className="btn-primary w-full mt-4 text-sm"
+        >
+          📞 Захиалга өгөх
+        </button>
+      </div>
+    </>
   )
 }

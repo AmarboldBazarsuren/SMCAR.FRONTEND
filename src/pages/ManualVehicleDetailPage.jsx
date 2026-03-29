@@ -1,5 +1,5 @@
 // Файл: frontend/src/pages/ManualVehicleDetailPage.jsx
-// Үүрэг: Admin гараар нэмсэн машины дэлгэрэнгүй хуудас
+// Өөрчлөлт: isManual={true} prop нэмсэн — гаалийн татвар харуулахгүй
 
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
@@ -30,6 +30,7 @@ export default function ManualVehicleDetailPage() {
       const data = await getManualVehicleDetail(id)
       if (data.success) {
         setVehicle(data.data)
+        // Pricing-г хадгална ч гаалийн татвар харуулахгүй
         setPricing(data.pricing)
       } else {
         setError('Машин олдсонгүй')
@@ -81,6 +82,12 @@ export default function ManualVehicleDetailPage() {
           <Link to="/" className="hover:text-white">Нүүр хуудас</Link>
           <span>/</span>
           <span className="text-white">{vehicle.title}</span>
+        </div>
+
+        {/* Монголд бэлэн label */}
+        <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-1.5 mb-4">
+          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+          <span className="text-green-400 text-sm font-medium">Монголд бэлэн зарагдаж байна</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -163,9 +170,14 @@ export default function ManualVehicleDetailPage() {
             </div>
           </div>
 
-          {/* Баруун: Үнийн хүснэгт */}
+          {/* Баруун: Үнийн хүснэгт — isManual=true тул гаалийн татвар харагдахгүй */}
           <div className="lg:col-span-1">
-            <PricingBreakdown pricing={pricing} priceKRW={vehicle.priceKRW} />
+            <PricingBreakdown
+              pricing={pricing}
+              priceKRW={vehicle.priceKRW}
+              isManual={true}
+              vehicleId={vehicle._id}
+            />
           </div>
         </div>
       </div>
