@@ -34,6 +34,142 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-primary;
   }
+  /* 
+  Дараах CSS-г src/index.css файлын @layer components {} дотор нэмнэ үү.
+  Эсвэл @layer components хаалтын өмнө байрлуулна.
+*/
+
+/* ============================================================
+   GARID TRADE ЗАГВАРЫН БРЭНДИЙН ЖАГСААЛТ
+   ============================================================ */
+
+/* Брэндийн үндсэн container — 2 багана grid */
+.brand-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 640px) {
+  .brand-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Брэндийн нэг мөр (товч) */
+.brand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+}
+
+.brand-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.brand-row-active {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.brand-name {
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.15s;
+  margin-right: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-count {
+  font-size: 13px;
+  color: #9ca3af;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Нээгдсэн загварын жагсаалт */
+.model-list {
+  /* Зэргэлдээ 2 нүдийг нэгтгэхийн тулд grid-column: span 2 ашиглана
+     Харин энэ нь JS-ийн DOM дотор шийдэгдэнэ, доорх класс grid child-д өгнө */
+  grid-column: span 1;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 4px 0;
+}
+
+.model-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  text-decoration: none;
+  transition: background 0.12s;
+}
+
+.model-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.model-name {
+  font-size: 13px;
+  color: #9ca3af;
+  transition: color 0.12s;
+}
+
+.model-row:hover .model-name {
+  color: #ffffff;
+}
+
+.model-count {
+  font-size: 12px;
+  color: #6b7280;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.model-row-all {
+  display: block;
+  padding: 8px 20px;
+  font-size: 12px;
+  color: #E31E24;
+  text-decoration: none;
+  transition: opacity 0.12s;
+}
+
+.model-row-all:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Бүгдийг харах товч */
+.show-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.show-all-btn:hover {
+  color: #ffffff;
+}
 }
 
 @layer components {

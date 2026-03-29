@@ -1,12 +1,9 @@
 // Файл: frontend/src/pages/HomePage.jsx
-// Өөрчлөлтүүд:
-// 1. Бүх брэндийн загваруудыг accordion дээр харагддаг болсон
-// 2. Admin banner онцлох машинуудын ДООР тусдаа харагдана
-// 3. Брэндийн жагсаалт 2-3 дугаар зурган шиг гоё харагдана
+// Garid Trade загвартай яг ижил — 4 багана, accordion нь бүх 4 баганыг хамарна
 
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import VehicleCard from '../components/VehicleCard.jsx'
@@ -19,195 +16,202 @@ import {
 } from '../services/vehicleService.js'
 import { formatMNT } from '../utils/formatters.js'
 
-// Анхны статик мэдээлэл
 const DEFAULT_BRANDS = [
-  { name: 'Kia', count: 23544 },
-  { name: 'Hyundai', count: 20186 },
-  { name: 'Mercedes-Benz', count: 9226 },
-  { name: 'BMW', count: 8707 },
-  { name: 'Genesis', count: 6701 },
-  { name: 'Chevrolet', count: 3309 },
-  { name: 'Renault', count: 2945 },
-  { name: 'Audi', count: 2609 },
-  { name: 'Porsche', count: 1520 },
-  { name: 'Mini', count: 1365 },
-  { name: 'Land Rover', count: 1191 },
-  { name: 'Volvo', count: 1098 },
-  { name: 'Toyota', count: 987 },
-  { name: 'Lexus', count: 876 },
-  { name: 'Honda', count: 765 },
-  { name: 'Ford', count: 654 },
-  { name: 'Jeep', count: 543 },
-  { name: 'Volkswagen', count: 498 },
-  { name: 'Tesla', count: 432 },
-  { name: 'Lincoln', count: 321 },
-  { name: 'Maserati', count: 234 },
-  { name: 'Jaguar', count: 198 },
-  { name: 'Bentley', count: 145 },
-  { name: 'Rolls-Royce', count: 98 },
-  { name: 'Lamborghini', count: 76 },
-  { name: 'Ferrari', count: 54 },
-  { name: 'Peugeot', count: 210 },
-  { name: 'Nissan', count: 187 },
+  { name: 'Kia',           count: 22950 },
+  { name: 'Hyundai',       count: 19592 },
+  { name: 'Mercedes-Benz', count: 9191  },
+  { name: 'BMW',           count: 8621  },
+  { name: 'Genesis',       count: 6607  },
+  { name: 'Chevrolet',     count: 3251  },
+  { name: 'Renault',       count: 2932  },
+  { name: 'Audi',          count: 2579  },
+  { name: 'Porsche',       count: 1497  },
+  { name: 'Mini',          count: 1345  },
+  { name: 'Land Rover',    count: 1189  },
+  { name: 'Volvo',         count: 1096  },
+  { name: 'Toyota',        count: 987   },
+  { name: 'Lexus',         count: 876   },
+  { name: 'Honda',         count: 765   },
+  { name: 'Ford',          count: 654   },
+  { name: 'Jeep',          count: 543   },
+  { name: 'Volkswagen',    count: 498   },
+  { name: 'Tesla',         count: 432   },
+  { name: 'Lincoln',       count: 321   },
+  { name: 'Maserati',      count: 234   },
+  { name: 'Jaguar',        count: 198   },
+  { name: 'Bentley',       count: 145   },
+  { name: 'Rolls-Royce',   count: 98    },
+  { name: 'Lamborghini',   count: 76    },
+  { name: 'Ferrari',       count: 54    },
+  { name: 'Peugeot',       count: 210   },
+  { name: 'Nissan',        count: 187   },
 ]
 
-// Default загварууд - бүх брэндэд
 const DEFAULT_BRAND_MODELS = {
   Kia: [
-    { name: 'Sportage', count: 3289 }, { name: 'Sorento', count: 2541 },
-    { name: 'Stonic', count: 1821 }, { name: 'K5', count: 1654 },
-    { name: 'Carnival', count: 1381 }, { name: 'Seltos', count: 987 },
-    { name: 'EV6', count: 443 }, { name: 'K3', count: 312 },
-    { name: 'Morning', count: 211 }, { name: 'Niro', count: 178 },
+    { name: 'Sportage', count: 3289 }, { name: 'Sorento',  count: 2541 },
+    { name: 'Stonic',   count: 1821 }, { name: 'K5',       count: 1654 },
+    { name: 'Carnival', count: 1381 }, { name: 'Seltos',   count: 987  },
+    { name: 'EV6',      count: 443  }, { name: 'K3',       count: 312  },
+    { name: 'Morning',  count: 211  }, { name: 'Niro',     count: 178  },
   ],
   Hyundai: [
-    { name: 'Tucson', count: 3102 }, { name: 'Santa Fe', count: 2876 },
-    { name: 'Avante', count: 2736 }, { name: 'Sonata', count: 1987 },
-    { name: 'Palisade', count: 1654 }, { name: 'Kona', count: 1145 },
-    { name: 'Grandeur', count: 987 }, { name: 'Venue', count: 317 },
-    { name: 'Ioniq5', count: 256 }, { name: 'i30', count: 95 },
+    { name: 'Tucson',   count: 3102 }, { name: 'Santa Fe', count: 2876 },
+    { name: 'Avante',   count: 2736 }, { name: 'Sonata',   count: 1987 },
+    { name: 'Palisade', count: 1654 }, { name: 'Kona',     count: 1145 },
+    { name: 'Grandeur', count: 987  }, { name: 'Venue',    count: 317  },
+    { name: 'Ioniq5',   count: 256  }, { name: 'i30',      count: 95   },
   ],
   'Mercedes-Benz': [
-    { name: 'E-Class', count: 1876 }, { name: 'C-Class', count: 1654 },
-    { name: 'GLE', count: 1234 }, { name: 'GLC', count: 987 },
-    { name: 'S-Class', count: 765 }, { name: 'GLB', count: 543 },
-    { name: 'CLA', count: 432 }, { name: 'A-Class', count: 321 },
-    { name: 'GLS', count: 234 }, { name: 'EQS', count: 120 },
+    { name: 'E-Class',    count: 2761 }, { name: 'S-Class',   count: 1338 },
+    { name: 'GLE-Class',  count: 895  }, { name: 'GLC-Class', count: 836  },
+    { name: 'C-Class',    count: 697  }, { name: 'CLS-Class', count: 507  },
+    { name: 'CLA-Class',  count: 228  }, { name: 'GLB-Class', count: 316  },
+    { name: 'GLS-Class',  count: 251  }, { name: 'GLA-Class', count: 231  },
+    { name: 'AMG GT',     count: 163  }, { name: 'G-Class',   count: 123  },
+    { name: 'CLE-Class',  count: 74   }, { name: 'EQA',       count: 61   },
+    { name: 'EQE',        count: 92   }, { name: 'EQB',       count: 44   },
+    { name: 'EQC',        count: 14   }, { name: 'EQS',       count: 79   },
+    { name: 'SLC-Class',  count: 11   }, { name: 'Sprinter',  count: 42   },
+    { name: 'B-Class',    count: 7    }, { name: 'V-Class',   count: 20   },
+    { name: 'SL-Class',   count: 28   },
   ],
   BMW: [
     { name: '5-Series', count: 2187 }, { name: '3-Series', count: 1654 },
-    { name: 'X5', count: 1432 }, { name: 'X3', count: 987 },
-    { name: '7-Series', count: 765 }, { name: 'X6', count: 654 },
-    { name: '4-Series', count: 543 }, { name: 'X4', count: 432 },
-    { name: 'i4', count: 86 }, { name: '1-Series', count: 235 },
+    { name: 'X5',       count: 1432 }, { name: 'X3',       count: 987  },
+    { name: '7-Series', count: 765  }, { name: 'X6',       count: 654  },
+    { name: '4-Series', count: 543  }, { name: 'X4',       count: 432  },
+    { name: 'i4',       count: 86   }, { name: '1-Series', count: 235  },
   ],
   Genesis: [
-    { name: 'GV80', count: 1876 }, { name: 'G80', count: 1543 },
-    { name: 'GV70', count: 1234 }, { name: 'G70', count: 876 },
-    { name: 'G90', count: 654 }, { name: 'GV60', count: 312 },
-    { name: 'GV90', count: 106 },
+    { name: 'GV80', count: 1876 }, { name: 'G80',  count: 1543 },
+    { name: 'GV70', count: 1234 }, { name: 'G70',  count: 876  },
+    { name: 'G90',  count: 654  }, { name: 'GV60', count: 312  },
+    { name: 'GV90', count: 106  },
   ],
   Chevrolet: [
-    { name: 'Trailblazer', count: 876 }, { name: 'Equinox', count: 654 },
-    { name: 'Malibu', count: 543 }, { name: 'Spark', count: 432 },
-    { name: 'Trax', count: 321 }, { name: 'Traverse', count: 234 },
-    { name: 'Colorado', count: 149 },
+    { name: 'Trailblazer', count: 876 }, { name: 'Equinox',  count: 654 },
+    { name: 'Malibu',      count: 543 }, { name: 'Spark',    count: 432 },
+    { name: 'Trax',        count: 321 }, { name: 'Traverse', count: 234 },
+    { name: 'Colorado',    count: 149 },
   ],
   Renault: [
-    { name: 'QM6', count: 987 }, { name: 'SM6', count: 765 },
-    { name: 'XM3', count: 543 }, { name: 'Arkana', count: 321 },
-    { name: 'Captur', count: 234 }, { name: 'ZOE', count: 95 },
+    { name: 'QM6',    count: 987 }, { name: 'SM6',    count: 765 },
+    { name: 'XM3',    count: 543 }, { name: 'Arkana', count: 321 },
+    { name: 'Captur', count: 234 }, { name: 'ZOE',    count: 95  },
   ],
   Audi: [
-    { name: 'Q5', count: 765 }, { name: 'A6', count: 654 },
-    { name: 'A4', count: 543 }, { name: 'Q7', count: 432 },
-    { name: 'A5', count: 321 }, { name: 'Q3', count: 234 },
-    { name: 'e-tron', count: 120 }, { name: 'A8', count: 86 },
+    { name: 'A6',          count: 928 }, { name: 'Q5',          count: 194 },
+    { name: 'Q7',          count: 182 }, { name: 'A7',          count: 175 },
+    { name: 'A4',          count: 165 }, { name: 'Q8',          count: 158 },
+    { name: 'A5',          count: 157 }, { name: 'A8',          count: 101 },
+    { name: 'A3',          count: 96  }, { name: 'Q4 e-tron',   count: 96  },
+    { name: 'Q3',          count: 86  }, { name: 'e-tron',      count: 73  },
+    { name: 'SQ5',         count: 33  }, { name: 'Q2',          count: 33  },
+    { name: 'R8',          count: 23  }, { name: 'Q8 e-tron',   count: 11  },
+    { name: 'S7',          count: 11  }, { name: 'e-tron GT',   count: 9   },
+    { name: 'S4',          count: 8   }, { name: 'S8',          count: 7   },
+    { name: 'S6',          count: 7   }, { name: 'RS7',         count: 6   },
+    { name: 'S3',          count: 6   }, { name: 'RSQ8',        count: 4   },
+    { name: 'SQ8',         count: 3   }, { name: 'RS e-tron GT',count: 3   },
+    { name: 'S5',          count: 2   }, { name: 'RS6',         count: 2   },
   ],
   Porsche: [
-    { name: 'Cayenne', count: 543 }, { name: 'Macan', count: 432 },
-    { name: 'Panamera', count: 321 }, { name: '911', count: 145 },
-    { name: 'Taycan', count: 79 },
+    { name: 'Cayenne',  count: 543 }, { name: 'Macan',    count: 432 },
+    { name: 'Panamera', count: 321 }, { name: '911',      count: 145 },
+    { name: 'Taycan',   count: 79  },
   ],
   Mini: [
-    { name: 'Countryman', count: 543 }, { name: 'Cooper', count: 432 },
-    { name: 'Clubman', count: 234 }, { name: 'Paceman', count: 156 },
+    { name: 'Countryman', count: 543 }, { name: 'Cooper',  count: 432 },
+    { name: 'Clubman',    count: 234 }, { name: 'Paceman', count: 156 },
   ],
   'Land Rover': [
-    { name: 'Range Rover Sport', count: 432 }, { name: 'Range Rover', count: 321 },
-    { name: 'Discovery', count: 234 }, { name: 'Defender', count: 145 },
-    { name: 'Evoque', count: 59 },
+    { name: 'Discovery Sport',    count: 207 }, { name: 'Discovery',        count: 202 },
+    { name: 'Range Rover Evoque', count: 194 }, { name: 'Range Rover',      count: 191 },
+    { name: 'Defender',           count: 145 }, { name: 'Range Rover Sport',count: 134 },
+    { name: 'Range Rover Velar',  count: 116 },
   ],
   Volvo: [
     { name: 'XC60', count: 432 }, { name: 'XC90', count: 321 },
-    { name: 'XC40', count: 234 }, { name: 'S90', count: 65 },
-    { name: 'V60', count: 46 },
+    { name: 'XC40', count: 234 }, { name: 'S90',  count: 65  },
+    { name: 'V60',  count: 46  },
   ],
   Toyota: [
-    { name: 'RAV4', count: 432 }, { name: 'Camry', count: 321 },
+    { name: 'RAV4',         count: 432 }, { name: 'Camry',      count: 321 },
     { name: 'Land Cruiser', count: 287 }, { name: 'Highlander', count: 234 },
-    { name: 'Corolla', count: 198 }, { name: 'Prius', count: 145 },
-    { name: 'Venza', count: 98 }, { name: 'Crown', count: 76 },
+    { name: 'Corolla',      count: 198 }, { name: 'Prius',      count: 145 },
   ],
   Lexus: [
     { name: 'RX', count: 321 }, { name: 'NX', count: 234 },
     { name: 'ES', count: 187 }, { name: 'LX', count: 145 },
-    { name: 'UX', count: 98 }, { name: 'IS', count: 87 },
-    { name: 'GX', count: 65 }, { name: 'LS', count: 43 },
+    { name: 'UX', count: 98  }, { name: 'IS', count: 87  },
   ],
   Honda: [
-    { name: 'CR-V', count: 287 }, { name: 'Accord', count: 234 },
-    { name: 'Civic', count: 198 }, { name: 'Pilot', count: 145 },
-    { name: 'HR-V', count: 98 }, { name: 'Odyssey', count: 76 },
+    { name: 'CR-V',  count: 287 }, { name: 'Accord', count: 234 },
+    { name: 'Civic', count: 198 }, { name: 'Pilot',  count: 145 },
+    { name: 'HR-V',  count: 98  },
   ],
   Ford: [
-    { name: 'Explorer', count: 234 }, { name: 'F-150', count: 187 },
-    { name: 'Mustang', count: 145 }, { name: 'Bronco', count: 98 },
-    { name: 'Edge', count: 76 }, { name: 'Ranger', count: 54 },
+    { name: 'Explorer', count: 234 }, { name: 'F-150',  count: 187 },
+    { name: 'Mustang',  count: 145 }, { name: 'Bronco', count: 98  },
+    { name: 'Edge',     count: 76  },
   ],
   Jeep: [
     { name: 'Grand Cherokee', count: 198 }, { name: 'Wrangler', count: 156 },
-    { name: 'Cherokee', count: 98 }, { name: 'Compass', count: 76 },
-    { name: 'Renegade', count: 43 },
+    { name: 'Cherokee',       count: 98  }, { name: 'Compass',  count: 76  },
   ],
   Volkswagen: [
-    { name: 'Tiguan', count: 187 }, { name: 'Passat', count: 145 },
-    { name: 'Golf', count: 123 }, { name: 'Touareg', count: 98 },
-    { name: 'Arteon', count: 65 }, { name: 'ID.4', count: 43 },
+    { name: 'Tiguan', count: 187 }, { name: 'Passat',  count: 145 },
+    { name: 'Golf',   count: 123 }, { name: 'Touareg', count: 98  },
   ],
   Tesla: [
     { name: 'Model Y', count: 187 }, { name: 'Model 3', count: 145 },
-    { name: 'Model S', count: 67 }, { name: 'Model X', count: 43 },
+    { name: 'Model S', count: 67  }, { name: 'Model X', count: 43  },
   ],
   Lincoln: [
     { name: 'Navigator', count: 123 }, { name: 'Aviator', count: 98 },
-    { name: 'Corsair', count: 65 }, { name: 'Nautilus', count: 43 },
+    { name: 'Corsair',   count: 65  }, { name: 'Nautilus',count: 43 },
   ],
   Maserati: [
-    { name: 'Ghibli', count: 98 }, { name: 'Levante', count: 87 },
-    { name: 'Quattroporte', count: 32 }, { name: 'Grecale', count: 17 },
+    { name: 'Ghibli',       count: 98 }, { name: 'Levante',      count: 87 },
+    { name: 'Quattroporte', count: 32 },
   ],
   Jaguar: [
-    { name: 'F-Pace', count: 87 }, { name: 'XE', count: 65 },
-    { name: 'XF', count: 32 }, { name: 'I-Pace', count: 14 },
+    { name: 'F-Pace', count: 87 }, { name: 'XE', count: 65 }, { name: 'XF', count: 32 },
   ],
   Bentley: [
-    { name: 'Bentayga', count: 67 }, { name: 'Continental GT', count: 43 },
-    { name: 'Flying Spur', count: 21 }, { name: 'Mulsanne', count: 14 },
+    { name: 'Bentayga',     count: 67 }, { name: 'Continental GT', count: 43 },
+    { name: 'Flying Spur',  count: 21 },
   ],
   'Rolls-Royce': [
-    { name: 'Cullinan', count: 43 }, { name: 'Ghost', count: 32 },
-    { name: 'Phantom', count: 14 }, { name: 'Wraith', count: 9 },
+    { name: 'Cullinan', count: 43 }, { name: 'Ghost',   count: 32 },
+    { name: 'Phantom',  count: 14 },
   ],
   Lamborghini: [
     { name: 'Urus', count: 43 }, { name: 'Huracan', count: 21 },
-    { name: 'Aventador', count: 12 },
   ],
   Ferrari: [
-    { name: 'GTC4Lusso', count: 21 }, { name: 'Roma', count: 16 },
-    { name: 'SF90', count: 9 }, { name: 'F8', count: 8 },
+    { name: 'Roma', count: 16 }, { name: 'SF90', count: 9 },
   ],
   Peugeot: [
-    { name: '3008', count: 98 }, { name: '5008', count: 76 },
-    { name: '2008', count: 54 }, { name: '508', count: 32 },
+    { name: '3008', count: 98 }, { name: '5008', count: 76 }, { name: '2008', count: 54 },
   ],
   Nissan: [
     { name: 'Qashqai', count: 87 }, { name: 'X-Trail', count: 65 },
-    { name: 'Murano', count: 43 }, { name: 'Patrol', count: 32 },
-    { name: 'Leaf', count: 20 },
+    { name: 'Murano',  count: 43 }, { name: 'Patrol',  count: 32 },
   ],
 }
 
+const INITIAL_SHOW = 12 // 3 мөр × 4 багана
+
 export default function HomePage() {
-  const [banners, setBanners] = useState([])
-  const [adminBanners, setAdminBanners] = useState([])
-  const [featuredVehicles, setFeaturedVehicles] = useState([])
-  const [manualVehicles, setManualVehicles] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [showAllBrands, setShowAllBrands] = useState(false)
-  const [openBrand, setOpenBrand] = useState(null)
-  const [brandStats, setBrandStats] = useState(null)
-  const [brands, setBrands] = useState(DEFAULT_BRANDS)
+  const [adminBanners,      setAdminBanners]      = useState([])
+  const [featuredVehicles,  setFeaturedVehicles]  = useState([])
+  const [manualVehicles,    setManualVehicles]     = useState([])
+  const [loading,           setLoading]           = useState(true)
+  const [showAllBrands,     setShowAllBrands]     = useState(false)
+  const [openBrand,         setOpenBrand]         = useState(null)
+  const [brands,            setBrands]            = useState(DEFAULT_BRANDS)
 
   useEffect(() => { loadData() }, [])
 
@@ -219,29 +223,18 @@ export default function HomePage() {
         getManualVehicles({ limit: 6 }),
         getBrandStats(),
       ])
-
-      if (bannersRes.status === 'fulfilled') {
-        const allBanners = bannersRes.value.data || []
-        // Admin banner-уудыг тусад нь хадгална
-        setAdminBanners(allBanners)
-      }
-
-      if (vehiclesRes.status === 'fulfilled') {
+      if (bannersRes.status === 'fulfilled')
+        setAdminBanners(bannersRes.value.data || [])
+      if (vehiclesRes.status === 'fulfilled')
         setFeaturedVehicles(vehiclesRes.value.data || [])
-      }
-
-      if (manualRes.status === 'fulfilled') {
+      if (manualRes.status === 'fulfilled')
         setManualVehicles(manualRes.value.data || [])
-      }
-
       if (statsRes.status === 'fulfilled' && statsRes.value.data) {
         const stats = statsRes.value.data
-        setBrandStats(stats)
-        const updatedBrands = DEFAULT_BRANDS.map(b => ({
+        setBrands(DEFAULT_BRANDS.map(b => ({
           ...b,
           count: stats[b.name]?.total || b.count,
-        }))
-        setBrands(updatedBrands)
+        })))
       }
     } catch (err) {
       console.error('❌ Нүүр хуудас алдаа:', err.message)
@@ -250,20 +243,16 @@ export default function HomePage() {
     }
   }
 
-  const toggleBrand = (brandName) => {
-    setOpenBrand(prev => prev === brandName ? null : brandName)
-  }
+  const toggleBrand = (name) =>
+    setOpenBrand(prev => (prev === name ? null : name))
 
-  const getBrandModels = (brandName) => {
-    if (brandStats && brandStats[brandName]?.models?.length) {
-      return brandStats[brandName].models.slice(0, 10)
-    }
-    return DEFAULT_BRAND_MODELS[brandName] || []
-  }
+  const visibleBrands = showAllBrands ? brands : brands.slice(0, INITIAL_SHOW)
 
-  const TOP_BRANDS = brands.slice(0, 4)
-  const OTHER_BRANDS = brands.slice(4)
-  const VISIBLE_OTHER_BRANDS = showAllBrands ? OTHER_BRANDS : OTHER_BRANDS.slice(0, 8)
+  // 4 баганаар мөр мөрөөр хуваана
+  const rows = []
+  for (let i = 0; i < visibleBrands.length; i += 4) {
+    rows.push(visibleBrands.slice(i, i + 4))
+  }
 
   const section1 = featuredVehicles.slice(0, 5)
   const section2 = featuredVehicles.slice(5, 9)
@@ -273,74 +262,101 @@ export default function HomePage() {
     <div className="min-h-screen bg-dark">
       <Navbar />
 
+      {/* ============================================================
+          БРЭНДИЙН ХЭСЭГ — Garid Trade 4-багана загвар
+          ============================================================ */}
+      <section className="max-w-7xl mx-auto px-4 pt-8 pb-4">
+        <h2 className="text-white font-semibold text-lg mb-5">
+          Солонгос улсаас автомашин захиалга
+        </h2>
 
-<section className="max-w-7xl mx-auto px-4 pt-6 pb-4">
-  <h2 className="text-white font-semibold text-lg mb-5">
-    Солонгос улсаас автомашин захиалга
-  </h2>
+        {/* Хүснэгт */}
+        <div className="w-full border border-white/10 rounded overflow-hidden">
+          {rows.map((row, rowIdx) => {
+            const openInRow = row.find(b => b.name === openBrand)
+            return (
+              <div key={rowIdx}>
+                {/* Брэндийн мөр */}
+                <div className="grid grid-cols-4 divide-x divide-white/10 border-b border-white/10 last:border-b-0">
+                  {row.map((brand) => {
+                    const isOpen = openBrand === brand.name
+                    return (
+                      <button
+                        key={brand.name}
+                        onClick={() => toggleBrand(brand.name)}
+                        className={`
+                          flex items-center justify-between px-4 py-3 w-full text-left
+                          transition-colors duration-150
+                          ${isOpen
+                            ? 'bg-white/5'
+                            : 'hover:bg-white/[0.03]'}
+                        `}
+                      >
+                        <span className={`text-sm font-semibold truncate mr-2 ${isOpen ? 'text-primary' : 'text-white'}`}>
+                          {brand.name}
+                        </span>
+                        <span className="text-gray-400 text-sm tabular-nums flex-shrink-0">
+                          {brand.count.toLocaleString()}
+                        </span>
+                      </button>
+                    )
+                  })}
+                  {/* Хоосон нүд — мөрийн брэнд 4-аас бага бол */}
+                  {row.length < 4 && Array.from({ length: 4 - row.length }).map((_, i) => (
+                    <div key={`empty-${i}`} className="px-4 py-3" />
+                  ))}
+                </div>
 
-  <div className="border-t border-l border-white/10">
-    {/* Бүх брэндүүд нэг grid-д */}
-    <div className="grid grid-cols-2 md:grid-cols-4">
-      {(showAllBrands ? brands : brands.slice(0, 12)).map(brand => {
-        const isOpen = openBrand === brand.name
-        const models = getBrandModels(brand.name)
-        return (
-          <div key={brand.name} className="border-r border-b border-white/10">
-            <button
-              onClick={() => toggleBrand(brand.name)}
-              className={`flex justify-between items-center w-full px-4 py-3 hover:bg-white/5 transition-colors ${isOpen ? 'bg-white/5' : ''}`}
-            >
-              <span className={`font-semibold text-sm truncate mr-2 ${isOpen ? 'text-primary' : 'text-white'}`}>
-                {brand.name}
-              </span>
-              <span className="text-gray-400 text-xs tabular-nums flex-shrink-0">
-                {brand.count.toLocaleString()}
-              </span>
-            </button>
-
-            {/* Нээгдсэн загварууд */}
-            {isOpen && (
-              <div className="border-t border-white/10 bg-dark-secondary/30 py-2">
-                {models.slice(0, 10).map(m => (
-                  <Link
-                    key={m.name}
-                    to={`/vehicles?manufacturer=${brand.name}&modelGroup=${m.name}`}
-                    className="flex justify-between text-xs text-gray-400 hover:text-white hover:bg-white/5 transition-colors px-4 py-1.5"
-                  >
-                    <span className="truncate mr-2">{m.name}</span>
-                    <span className="text-gray-500 tabular-nums flex-shrink-0">
-                      {m.count?.toLocaleString()}
-                    </span>
-                  </Link>
-                ))}
-                <Link
-                  to={`/vehicles?manufacturer=${brand.name}`}
-                  className="block text-xs text-primary hover:underline px-4 py-2"
-                >
-                  Бүгдийг харах →
-                </Link>
+                {/* Accordion загварын жагсаалт — 4 баганыг бүгдийг хамарна */}
+                {openInRow && (
+                  <div className="border-b border-white/10 bg-white/[0.02]">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-0 px-4 py-3">
+                      {(DEFAULT_BRAND_MODELS[openInRow.name] || []).map((m) => (
+                        <Link
+                          key={m.name}
+                          to={`/vehicles?manufacturer=${openInRow.name}&modelGroup=${m.name}`}
+                          className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-white/5 transition-colors group"
+                        >
+                          <span className="text-gray-400 text-sm group-hover:text-white transition-colors truncate mr-2">
+                            {m.name}
+                          </span>
+                          <span className="text-gray-500 text-xs tabular-nums flex-shrink-0">
+                            {m.count?.toLocaleString()}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="px-6 pb-3">
+                      <Link
+                        to={`/vehicles?manufacturer=${openInRow.name}`}
+                        className="text-primary text-sm hover:underline"
+                      >
+                        Бүгдийг харах →
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        )
-      })}
-    </div>
-  </div>
+            )
+          })}
+        </div>
 
-  <button
-    onClick={() => setShowAllBrands(!showAllBrands)}
-    className="flex items-center gap-1 text-xs text-gray-500 hover:text-white mt-3 transition-colors"
-  >
-    {showAllBrands ? 'Хураах' : 'Бүгдийг харах'}
-    <ChevronDown size={12} className={showAllBrands ? 'rotate-180 transition-transform' : 'transition-transform'} />
-  </button>
-</section>
+        {/* Бүгдийг харах товч */}
+        <button
+          onClick={() => setShowAllBrands(!showAllBrands)}
+          className="flex items-center gap-1 mt-3 text-gray-500 hover:text-white text-sm transition-colors"
+        >
+          {showAllBrands ? 'Хураах' : 'Бүгдийг харах'}
+          <ChevronDown
+            size={14}
+            className={showAllBrands ? 'rotate-180 transition-transform' : 'transition-transform'}
+          />
+        </button>
+      </section>
+
       <div className="border-t border-white/10 my-2" />
 
-      {/* ============================================================
-          ENCAR BANNER (үндсэн том banner)
-          ============================================================ */}
+      {/* ENCAR BANNER */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         {loading ? (
           <div className="bg-dark-card rounded-xl h-96 flex items-center justify-center">
@@ -391,10 +407,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* ============================================================
-          ADMIN BANNER — Онцлох машинуудын ДООР
-          Encar banner-тай ижил хэмжээтэй
-          ============================================================ */}
+      {/* ADMIN BANNER */}
       {adminBanners.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 py-6">
           <AdminBannerSlider banners={adminBanners} />
@@ -407,10 +420,10 @@ export default function HomePage() {
           <h2 className="text-white font-bold text-2xl text-center mb-10">Захиалга өгөх заавар</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[
-              { step: '01', title: 'Машин сонгох', desc: 'Манай сайтаас эсвэл каталогоос машинаа сонгоно' },
+              { step: '01', title: 'Машин сонгох',  desc: 'Манай сайтаас эсвэл каталогоос машинаа сонгоно' },
               { step: '02', title: 'Захиалга өгөх', desc: 'Манай менежертэй холбогдож захиалга баталгаажуулна' },
-              { step: '03', title: 'Төлбөр хийх', desc: 'Урьдчилгаа төлбөр хийснээр машиныг захиална' },
-              { step: '04', title: 'Монголд авах', desc: 'Гааль, тээвэр бүгдийг хариуцаж монголд хүргэнэ' },
+              { step: '03', title: 'Төлбөр хийх',   desc: 'Урьдчилгаа төлбөр хийснээр машиныг захиална' },
+              { step: '04', title: 'Монголд авах',   desc: 'Гааль, тээвэр бүгдийг хариуцаж монголд хүргэнэ' },
             ].map(item => (
               <div key={item.step} className="text-center">
                 <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold mx-auto mb-4">
@@ -432,56 +445,27 @@ export default function HomePage() {
 // ============================================================
 // HELPER COMPONENTS
 // ============================================================
-
-// Encar-аас татсан онцлох машины том banner
 function FeaturedCarBanner({ car }) {
   const priceMNT = car.priceMNT || car.totalPriceMNT
-  const image = car.firstPhoto || car.photos?.[0]
-
+  const image    = car.firstPhoto || car.photos?.[0]
   return (
     <div className="relative rounded-xl overflow-hidden bg-dark-card min-h-[400px] flex">
       <div className="flex-1 relative">
-        {image ? (
-          <img
-            src={image}
-            alt={car.manufacturer}
-            className="w-full h-full object-cover"
-            style={{ minHeight: '400px' }}
-          />
-        ) : (
-          <div className="w-full h-full bg-dark-secondary flex items-center justify-center text-gray-600 min-h-[400px] text-6xl">
-            🚗
-          </div>
-        )}
+        {image
+          ? <img src={image} alt={car.manufacturer} className="w-full h-full object-cover" style={{ minHeight: '400px' }} />
+          : <div className="w-full h-full bg-dark-secondary flex items-center justify-center text-gray-600 min-h-[400px] text-6xl">🚗</div>
+        }
       </div>
       <div className="absolute right-0 top-0 bottom-0 w-72 bg-gradient-to-l from-black/95 via-black/80 to-transparent flex flex-col justify-center p-8">
         <span className="badge-red mb-3">ОНЦЛОХ МАШИН</span>
-        <h2 className="text-white font-bold text-2xl leading-tight mb-2">
-          {car.manufacturer} {car.model}
-        </h2>
+        <h2 className="text-white font-bold text-2xl leading-tight mb-2">{car.manufacturer} {car.model}</h2>
         <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-          <div>
-            <div className="text-gray-500 text-xs">ОН:</div>
-            <div className="text-white font-semibold">{car.year}</div>
-          </div>
-          <div>
-            <div className="text-gray-500 text-xs">ГҮЙЛТ:</div>
-            <div className="text-white font-semibold">{car.mileage?.toLocaleString()} км</div>
-          </div>
-          {car.fuelType && (
-            <div>
-              <div className="text-gray-500 text-xs">ТҮЛШ:</div>
-              <div className="text-white font-semibold">{car.fuelType}</div>
-            </div>
-          )}
+          <div><div className="text-gray-500 text-xs">ОН:</div><div className="text-white font-semibold">{car.year}</div></div>
+          <div><div className="text-gray-500 text-xs">ГҮЙЛТ:</div><div className="text-white font-semibold">{car.mileage?.toLocaleString()} км</div></div>
+          {car.fuelType && <div><div className="text-gray-500 text-xs">ТҮЛШ:</div><div className="text-white font-semibold">{car.fuelType}</div></div>}
         </div>
-        {priceMNT && (
-          <div className="text-primary font-bold text-lg mb-4">{formatMNT(priceMNT)}</div>
-        )}
-        <Link
-          to={`/vehicles/encar/${car.id}`}
-          className="block w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded text-center transition-colors text-sm uppercase tracking-wider"
-        >
+        {priceMNT && <div className="text-primary font-bold text-lg mb-4">{formatMNT(priceMNT)}</div>}
+        <Link to={`/vehicles/encar/${car.id}`} className="block w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded text-center transition-colors text-sm uppercase tracking-wider">
           ДЭЛГЭРЭНГҮЙ ҮЗЭХ
         </Link>
       </div>
@@ -489,67 +473,35 @@ function FeaturedCarBanner({ car }) {
   )
 }
 
-// Admin-аас оруулсан banner slider — Encar banner-тай ижил хэмжээ
 function AdminBannerSlider({ banners }) {
   const [idx, setIdx] = useState(0)
-
   useEffect(() => {
     if (banners.length <= 1) return
     const t = setInterval(() => setIdx(p => (p + 1) % banners.length), 5000)
     return () => clearInterval(t)
   }, [banners])
-
   const cur = banners[idx]
-
   return (
     <div>
-      {/* Label */}
       <div className="flex items-center gap-2 mb-3">
         <span className="badge-red text-xs">ЗАРАА</span>
         <span className="text-gray-400 text-sm">Манай зар мэдэгдэл</span>
       </div>
-
-      {/* Banner — Encar banner шиг хэмжээ (min-h-[400px]) */}
       <div className="relative rounded-xl overflow-hidden bg-dark-card" style={{ minHeight: '400px' }}>
-        {cur.linkUrl ? (
-          <a href={cur.linkUrl} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-            <img
-              src={cur.imageUrl}
-              alt={cur.title}
-              className="w-full h-full object-cover"
-              style={{ minHeight: '400px' }}
-              onError={e => e.target.style.display = 'none'}
-            />
-          </a>
-        ) : (
-          <img
-            src={cur.imageUrl}
-            alt={cur.title}
-            className="w-full h-full object-cover"
-            style={{ minHeight: '400px' }}
-            onError={e => e.target.style.display = 'none'}
-          />
-        )}
-
-        {/* Доод мэдээлэл */}
+        {cur.linkUrl
+          ? <a href={cur.linkUrl} target="_blank" rel="noopener noreferrer"><img src={cur.imageUrl} alt={cur.title} className="w-full h-full object-cover" style={{ minHeight: '400px' }} /></a>
+          : <img src={cur.imageUrl} alt={cur.title} className="w-full h-full object-cover" style={{ minHeight: '400px' }} />
+        }
         {cur.title && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
             <h3 className="text-white font-bold text-lg">{cur.title}</h3>
-            {cur.description && (
-              <p className="text-gray-300 text-sm mt-1">{cur.description}</p>
-            )}
+            {cur.description && <p className="text-gray-300 text-sm mt-1">{cur.description}</p>}
           </div>
         )}
-
-        {/* Pagination dots */}
         {banners.length > 1 && (
           <div className="absolute bottom-4 right-6 flex gap-2">
             {banners.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setIdx(i)}
-                className={`w-2 h-2 rounded-full transition-colors ${i === idx ? 'bg-primary' : 'bg-white/40'}`}
-              />
+              <button key={i} onClick={() => setIdx(i)} className={`w-2 h-2 rounded-full transition-colors ${i === idx ? 'bg-primary' : 'bg-white/40'}`} />
             ))}
           </div>
         )}
@@ -562,10 +514,7 @@ function SectionHeader({ title, link }) {
   return (
     <div className="flex justify-between items-center">
       <h2 className="text-white font-bold text-xl">{title}</h2>
-      <Link
-        to={link}
-        className="text-gray-400 hover:text-white text-sm transition-colors flex items-center gap-1"
-      >
+      <Link to={link} className="text-gray-400 hover:text-white text-sm transition-colors flex items-center gap-1">
         <ChevronLeft size={16} /><ChevronRight size={16} />
       </Link>
     </div>
