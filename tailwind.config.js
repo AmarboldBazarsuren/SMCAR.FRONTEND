@@ -1,6 +1,4 @@
 // Файл: frontend/tailwind.config.js
-// Үүрэг: Tailwind CSS тохиргоо - өнгө, фонт тодорхойлох
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -10,24 +8,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        // SMCar.mn брэндийн өнгөнүүд
         primary: {
-          DEFAULT: '#E31E24', // Улаан - үндсэн өнгө
+          DEFAULT: '#E31E24',
           dark: '#B51519',
           light: '#FF3A40',
         },
+        // Цагаан theme-д зориулсан өнгөнүүд
         dark: {
-          DEFAULT: '#111111',
-          secondary: '#1C1C1C',
-          card: '#232323',
+          DEFAULT: '#f4f4f5',       // Үндсэн дэвсгэр — цайвар саарал
+          secondary: '#ffffff',     // Card/Navbar — цагаан
+          card: '#ffffff',          // Card — цагаан
         },
         gray: {
-          850: '#1a1a1a',
-          750: '#2a2a2a',
+          850: '#e4e4e7',
+          750: '#d4d4d8',
         }
       },
       fontFamily: {
-        // Монгол хэлэнд тохирсон фонт
         sans: ['Pretendard', 'Noto Sans', 'system-ui', 'sans-serif'],
         display: ['Bebas Neue', 'Impact', 'sans-serif'],
       },

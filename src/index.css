@@ -1,6 +1,4 @@
 /* Файл: frontend/src/index.css */
-/* Үүрэг: Global CSS - Tailwind import + custom styles */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,159 +15,23 @@
   }
 
   body {
-    @apply bg-dark text-white font-sans;
+    @apply bg-dark text-gray-800 font-sans;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Scrollbar загвар */
+  /* Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-dark-secondary;
+    @apply bg-gray-100;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-600 rounded-full;
+    @apply bg-gray-300 rounded-full;
   }
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-primary;
   }
-  /* 
-  Дараах CSS-г src/index.css файлын @layer components {} дотор нэмнэ үү.
-  Эсвэл @layer components хаалтын өмнө байрлуулна.
-*/
-
-/* ============================================================
-   GARID TRADE ЗАГВАРЫН БРЭНДИЙН ЖАГСААЛТ
-   ============================================================ */
-
-/* Брэндийн үндсэн container — 2 багана grid */
-.brand-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-@media (max-width: 640px) {
-  .brand-list {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* Брэндийн нэг мөр (товч) */
-.brand-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 14px 16px;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: transparent;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  text-align: left;
-}
-
-.brand-row:hover {
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.brand-row-active {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.brand-name {
-  font-size: 14px;
-  font-weight: 600;
-  transition: color 0.15s;
-  margin-right: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.brand-count {
-  font-size: 13px;
-  color: #9ca3af;
-  flex-shrink: 0;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Нээгдсэн загварын жагсаалт */
-.model-list {
-  /* Зэргэлдээ 2 нүдийг нэгтгэхийн тулд grid-column: span 2 ашиглана
-     Харин энэ нь JS-ийн DOM дотор шийдэгдэнэ, доорх класс grid child-д өгнө */
-  grid-column: span 1;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  padding: 4px 0;
-}
-
-.model-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 20px;
-  text-decoration: none;
-  transition: background 0.12s;
-}
-
-.model-row:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.model-name {
-  font-size: 13px;
-  color: #9ca3af;
-  transition: color 0.12s;
-}
-
-.model-row:hover .model-name {
-  color: #ffffff;
-}
-
-.model-count {
-  font-size: 12px;
-  color: #6b7280;
-  flex-shrink: 0;
-  font-variant-numeric: tabular-nums;
-}
-
-.model-row-all {
-  display: block;
-  padding: 8px 20px;
-  font-size: 12px;
-  color: #E31E24;
-  text-decoration: none;
-  transition: opacity 0.12s;
-}
-
-.model-row-all:hover {
-  opacity: 0.8;
-  text-decoration: underline;
-}
-
-/* Бүгдийг харах товч */
-.show-all-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 12px;
-  font-size: 12px;
-  color: #6b7280;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.15s;
-}
-
-.show-all-btn:hover {
-  color: #ffffff;
-}
 }
 
 @layer components {
@@ -181,41 +43,157 @@
   }
 
   .btn-secondary {
-    @apply border border-white/20 hover:border-white/50 text-white 
+    @apply border border-gray-300 hover:border-gray-500 text-gray-700
            font-semibold px-6 py-3 rounded transition-colors duration-200
            inline-flex items-center justify-center gap-2 cursor-pointer;
   }
 
   /* Машины карт */
   .vehicle-card {
-    @apply bg-dark-card rounded-lg overflow-hidden 
-           hover:ring-1 hover:ring-primary/50 
+    @apply bg-white rounded-lg overflow-hidden border border-gray-200
+           hover:border-primary/50 hover:shadow-md
            transition-all duration-200 cursor-pointer;
   }
 
   /* Хүснэгтийн мөр */
   .table-row-hover {
-    @apply hover:bg-white/5 transition-colors duration-150;
+    @apply hover:bg-gray-50 transition-colors duration-150;
   }
 
   /* Input талбар */
   .input-field {
-    @apply bg-dark-secondary border border-white/10 rounded px-4 py-2.5 
-           text-white placeholder-gray-500 w-full
+    @apply bg-white border border-gray-300 rounded px-4 py-2.5 
+           text-gray-800 placeholder-gray-400 w-full
            focus:outline-none focus:border-primary/50 
            transition-colors duration-200;
   }
 
   /* Мэдэгдэл label */
   .badge-red {
-    @apply bg-primary/20 text-primary text-xs font-semibold 
+    @apply bg-primary/10 text-primary text-xs font-semibold 
            px-2 py-0.5 rounded uppercase tracking-wider;
+  }
+
+  /* ============================================================
+     БРЭНДИЙН ЖАГСААЛТ
+     ============================================================ */
+  .brand-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid #e4e4e7;
+    border-left: 1px solid #e4e4e7;
+  }
+
+  .brand-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 14px 16px;
+    border-right: 1px solid #e4e4e7;
+    border-bottom: 1px solid #e4e4e7;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    text-align: left;
+  }
+
+  .brand-row:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .brand-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #18181b;
+    transition: color 0.15s;
+    margin-right: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .brand-count {
+    font-size: 13px;
+    color: #71717a;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .model-list {
+    grid-column: span 1;
+    border-right: 1px solid #e4e4e7;
+    border-bottom: 1px solid #e4e4e7;
+    background: #fafafa;
+    padding: 4px 0;
+  }
+
+  .model-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    text-decoration: none;
+    transition: background 0.12s;
+  }
+
+  .model-row:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .model-name {
+    font-size: 13px;
+    color: #71717a;
+    transition: color 0.12s;
+  }
+
+  .model-row:hover .model-name {
+    color: #18181b;
+  }
+
+  .model-count {
+    font-size: 12px;
+    color: #a1a1aa;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .model-row-all {
+    display: block;
+    padding: 8px 20px;
+    font-size: 12px;
+    color: #E31E24;
+    text-decoration: none;
+    transition: opacity 0.12s;
+  }
+
+  .model-row-all:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+  }
+
+  .show-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #71717a;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.15s;
+  }
+
+  .show-all-btn:hover {
+    color: #18181b;
   }
 }
 
-/* Swiper custom override */
+/* Swiper */
 .swiper-pagination-bullet {
-  background: rgba(255,255,255,0.4) !important;
+  background: rgba(0,0,0,0.3) !important;
   opacity: 1 !important;
 }
 .swiper-pagination-bullet-active {

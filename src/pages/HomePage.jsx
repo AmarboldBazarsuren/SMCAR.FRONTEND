@@ -1,5 +1,5 @@
 // Файл: frontend/src/pages/HomePage.jsx
-// Garid Trade загвартай яг ижил — 4 багана, accordion нь бүх 4 баганыг хамарна
+// Light theme — цагаан дэвсгэртэй
 
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -101,20 +101,12 @@ const DEFAULT_BRAND_MODELS = {
     { name: 'Captur', count: 234 }, { name: 'ZOE',    count: 95  },
   ],
   Audi: [
-    { name: 'A6',          count: 928 }, { name: 'Q5',          count: 194 },
-    { name: 'Q7',          count: 182 }, { name: 'A7',          count: 175 },
-    { name: 'A4',          count: 165 }, { name: 'Q8',          count: 158 },
-    { name: 'A5',          count: 157 }, { name: 'A8',          count: 101 },
-    { name: 'A3',          count: 96  }, { name: 'Q4 e-tron',   count: 96  },
-    { name: 'Q3',          count: 86  }, { name: 'e-tron',      count: 73  },
-    { name: 'SQ5',         count: 33  }, { name: 'Q2',          count: 33  },
-    { name: 'R8',          count: 23  }, { name: 'Q8 e-tron',   count: 11  },
-    { name: 'S7',          count: 11  }, { name: 'e-tron GT',   count: 9   },
-    { name: 'S4',          count: 8   }, { name: 'S8',          count: 7   },
-    { name: 'S6',          count: 7   }, { name: 'RS7',         count: 6   },
-    { name: 'S3',          count: 6   }, { name: 'RSQ8',        count: 4   },
-    { name: 'SQ8',         count: 3   }, { name: 'RS e-tron GT',count: 3   },
-    { name: 'S5',          count: 2   }, { name: 'RS6',         count: 2   },
+    { name: 'A6',        count: 928 }, { name: 'Q5',        count: 194 },
+    { name: 'Q7',        count: 182 }, { name: 'A7',        count: 175 },
+    { name: 'A4',        count: 165 }, { name: 'Q8',        count: 158 },
+    { name: 'A5',        count: 157 }, { name: 'A8',        count: 101 },
+    { name: 'A3',        count: 96  }, { name: 'Q4 e-tron', count: 96  },
+    { name: 'Q3',        count: 86  }, { name: 'e-tron',    count: 73  },
   ],
   Porsche: [
     { name: 'Cayenne',  count: 543 }, { name: 'Macan',    count: 432 },
@@ -126,9 +118,9 @@ const DEFAULT_BRAND_MODELS = {
     { name: 'Clubman',    count: 234 }, { name: 'Paceman', count: 156 },
   ],
   'Land Rover': [
-    { name: 'Discovery Sport',    count: 207 }, { name: 'Discovery',        count: 202 },
-    { name: 'Range Rover Evoque', count: 194 }, { name: 'Range Rover',      count: 191 },
-    { name: 'Defender',           count: 145 }, { name: 'Range Rover Sport',count: 134 },
+    { name: 'Discovery Sport',    count: 207 }, { name: 'Discovery',         count: 202 },
+    { name: 'Range Rover Evoque', count: 194 }, { name: 'Range Rover',       count: 191 },
+    { name: 'Defender',           count: 145 }, { name: 'Range Rover Sport', count: 134 },
     { name: 'Range Rover Velar',  count: 116 },
   ],
   Volvo: [
@@ -170,7 +162,7 @@ const DEFAULT_BRAND_MODELS = {
   ],
   Lincoln: [
     { name: 'Navigator', count: 123 }, { name: 'Aviator', count: 98 },
-    { name: 'Corsair',   count: 65  }, { name: 'Nautilus',count: 43 },
+    { name: 'Corsair',   count: 65  }, { name: 'Nautilus', count: 43 },
   ],
   Maserati: [
     { name: 'Ghibli',       count: 98 }, { name: 'Levante',      count: 87 },
@@ -180,8 +172,8 @@ const DEFAULT_BRAND_MODELS = {
     { name: 'F-Pace', count: 87 }, { name: 'XE', count: 65 }, { name: 'XF', count: 32 },
   ],
   Bentley: [
-    { name: 'Bentayga',     count: 67 }, { name: 'Continental GT', count: 43 },
-    { name: 'Flying Spur',  count: 21 },
+    { name: 'Bentayga',    count: 67 }, { name: 'Continental GT', count: 43 },
+    { name: 'Flying Spur', count: 21 },
   ],
   'Rolls-Royce': [
     { name: 'Cullinan', count: 43 }, { name: 'Ghost',   count: 32 },
@@ -202,16 +194,16 @@ const DEFAULT_BRAND_MODELS = {
   ],
 }
 
-const INITIAL_SHOW = 12 // 3 мөр × 4 багана
+const INITIAL_SHOW = 12
 
 export default function HomePage() {
-  const [adminBanners,      setAdminBanners]      = useState([])
-  const [featuredVehicles,  setFeaturedVehicles]  = useState([])
-  const [manualVehicles,    setManualVehicles]     = useState([])
-  const [loading,           setLoading]           = useState(true)
-  const [showAllBrands,     setShowAllBrands]     = useState(false)
-  const [openBrand,         setOpenBrand]         = useState(null)
-  const [brands,            setBrands]            = useState(DEFAULT_BRANDS)
+  const [adminBanners,     setAdminBanners]     = useState([])
+  const [featuredVehicles, setFeaturedVehicles] = useState([])
+  const [manualVehicles,   setManualVehicles]   = useState([])
+  const [loading,          setLoading]          = useState(true)
+  const [showAllBrands,    setShowAllBrands]    = useState(false)
+  const [openBrand,        setOpenBrand]        = useState(null)
+  const [brands,           setBrands]           = useState(DEFAULT_BRANDS)
 
   useEffect(() => { loadData() }, [])
 
@@ -248,10 +240,15 @@ export default function HomePage() {
 
   const visibleBrands = showAllBrands ? brands : brands.slice(0, INITIAL_SHOW)
 
-  // 4 баганаар мөр мөрөөр хуваана
-  const rows = []
+  // Desktop: 4 багана, Mobile: 2 багана
+  const desktopRows = []
   for (let i = 0; i < visibleBrands.length; i += 4) {
-    rows.push(visibleBrands.slice(i, i + 4))
+    desktopRows.push(visibleBrands.slice(i, i + 4))
+  }
+
+  const mobileRows = []
+  for (let i = 0; i < visibleBrands.length; i += 2) {
+    mobileRows.push(visibleBrands.slice(i, i + 2))
   }
 
   const section1 = featuredVehicles.slice(0, 5)
@@ -259,40 +256,33 @@ export default function HomePage() {
   const section3 = featuredVehicles.slice(9, 13)
 
   return (
-    <div className="min-h-screen bg-dark">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      {/* ============================================================
-          БРЭНДИЙН ХЭСЭГ — Garid Trade 4-багана загвар
-          ============================================================ */}
+      {/* ── БРЭНДИЙН ХЭСЭГ ── */}
       <section className="max-w-7xl mx-auto px-4 pt-8 pb-4">
-        <h2 className="text-white font-semibold text-lg mb-5">
+        <h2 className="text-gray-900 font-semibold text-lg mb-5">
           Солонгос улсаас автомашин захиалга
         </h2>
 
-        {/* Хүснэгт */}
-        <div className="w-full border border-white/10 rounded overflow-hidden">
-          {rows.map((row, rowIdx) => {
+        {/* DESKTOP (sm+): 4 багана */}
+        <div className="hidden sm:block w-full border border-gray-200 rounded overflow-hidden bg-white">
+          {desktopRows.map((row, rowIdx) => {
             const openInRow = row.find(b => b.name === openBrand)
             return (
               <div key={rowIdx}>
-                {/* Брэндийн мөр */}
-                <div className="grid grid-cols-4 divide-x divide-white/10 border-b border-white/10 last:border-b-0">
+                <div className="grid grid-cols-4 divide-x divide-gray-200 border-b border-gray-200 last:border-b-0">
                   {row.map((brand) => {
                     const isOpen = openBrand === brand.name
                     return (
                       <button
                         key={brand.name}
                         onClick={() => toggleBrand(brand.name)}
-                        className={`
-                          flex items-center justify-between px-4 py-3 w-full text-left
-                          transition-colors duration-150
-                          ${isOpen
-                            ? 'bg-white/5'
-                            : 'hover:bg-white/[0.03]'}
-                        `}
+                        className={`flex items-center justify-between px-4 py-3 w-full text-left transition-colors duration-150 ${
+                          isOpen ? 'bg-red-50' : 'hover:bg-gray-50'
+                        }`}
                       >
-                        <span className={`text-sm font-semibold truncate mr-2 ${isOpen ? 'text-primary' : 'text-white'}`}>
+                        <span className={`text-sm font-semibold truncate mr-2 ${isOpen ? 'text-primary' : 'text-gray-800'}`}>
                           {brand.name}
                         </span>
                         <span className="text-gray-400 text-sm tabular-nums flex-shrink-0">
@@ -301,26 +291,25 @@ export default function HomePage() {
                       </button>
                     )
                   })}
-                  {/* Хоосон нүд — мөрийн брэнд 4-аас бага бол */}
                   {row.length < 4 && Array.from({ length: 4 - row.length }).map((_, i) => (
                     <div key={`empty-${i}`} className="px-4 py-3" />
                   ))}
                 </div>
 
-                {/* Accordion загварын жагсаалт — 4 баганыг бүгдийг хамарна */}
+                {/* Accordion — desktop */}
                 {openInRow && (
-                  <div className="border-b border-white/10 bg-white/[0.02]">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-0 px-4 py-3">
+                  <div className="border-b border-gray-200 bg-gray-50">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 px-4 py-3">
                       {(DEFAULT_BRAND_MODELS[openInRow.name] || []).map((m) => (
                         <Link
                           key={m.name}
                           to={`/vehicles?manufacturer=${openInRow.name}&modelGroup=${m.name}`}
-                          className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-white/5 transition-colors group"
+                          className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-gray-100 transition-colors group"
                         >
-                          <span className="text-gray-400 text-sm group-hover:text-white transition-colors truncate mr-2">
+                          <span className="text-gray-500 text-sm group-hover:text-gray-900 transition-colors truncate mr-2">
                             {m.name}
                           </span>
-                          <span className="text-gray-500 text-xs tabular-nums flex-shrink-0">
+                          <span className="text-gray-400 text-xs tabular-nums flex-shrink-0">
                             {m.count?.toLocaleString()}
                           </span>
                         </Link>
@@ -341,10 +330,73 @@ export default function HomePage() {
           })}
         </div>
 
+        {/* MOBILE (xs): 2 багана */}
+        <div className="block sm:hidden w-full border border-gray-200 rounded overflow-hidden bg-white">
+          {mobileRows.map((row, rowIdx) => {
+            const openInRow = row.find(b => b.name === openBrand)
+            return (
+              <div key={rowIdx}>
+                <div className="grid grid-cols-2 divide-x divide-gray-200 border-b border-gray-200 last:border-b-0">
+                  {row.map((brand) => {
+                    const isOpen = openBrand === brand.name
+                    return (
+                      <button
+                        key={brand.name}
+                        onClick={() => toggleBrand(brand.name)}
+                        className={`flex items-center justify-between px-3 py-3 w-full text-left transition-colors duration-150 ${
+                          isOpen ? 'bg-red-50' : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className={`text-sm font-semibold truncate mr-2 ${isOpen ? 'text-primary' : 'text-gray-800'}`}>
+                          {brand.name}
+                        </span>
+                        <span className="text-gray-400 text-xs tabular-nums flex-shrink-0">
+                          {brand.count.toLocaleString()}
+                        </span>
+                      </button>
+                    )
+                  })}
+                  {row.length < 2 && <div className="px-3 py-3" />}
+                </div>
+
+                {/* Accordion — mobile */}
+                {openInRow && (
+                  <div className="border-b border-gray-200 bg-gray-50">
+                    <div className="grid grid-cols-2 px-3 py-2">
+                      {(DEFAULT_BRAND_MODELS[openInRow.name] || []).map((m) => (
+                        <Link
+                          key={m.name}
+                          to={`/vehicles?manufacturer=${openInRow.name}&modelGroup=${m.name}`}
+                          className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-gray-100 transition-colors group"
+                        >
+                          <span className="text-gray-500 text-sm group-hover:text-gray-900 transition-colors truncate mr-1">
+                            {m.name}
+                          </span>
+                          <span className="text-gray-400 text-xs tabular-nums flex-shrink-0">
+                            {m.count?.toLocaleString()}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="px-5 pb-3">
+                      <Link
+                        to={`/vehicles?manufacturer=${openInRow.name}`}
+                        className="text-primary text-sm hover:underline"
+                      >
+                        Бүгдийг харах →
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
         {/* Бүгдийг харах товч */}
         <button
           onClick={() => setShowAllBrands(!showAllBrands)}
-          className="flex items-center gap-1 mt-3 text-gray-500 hover:text-white text-sm transition-colors"
+          className="flex items-center gap-1 mt-3 text-gray-400 hover:text-gray-700 text-sm transition-colors"
         >
           {showAllBrands ? 'Хураах' : 'Бүгдийг харах'}
           <ChevronDown
@@ -354,24 +406,24 @@ export default function HomePage() {
         </button>
       </section>
 
-      <div className="border-t border-white/10 my-2" />
+      <div className="border-t border-gray-200 my-2" />
 
-      {/* ENCAR BANNER */}
+      {/* FEATURED BANNER */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         {loading ? (
-          <div className="bg-dark-card rounded-xl h-96 flex items-center justify-center">
+          <div className="bg-white border border-gray-200 rounded-xl h-96 flex items-center justify-center">
             <LoadingSpinner text="Ачааллаж байна..." />
           </div>
         ) : section1.length > 0 ? (
           <FeaturedCarBanner car={section1[0]} />
         ) : (
-          <div className="bg-dark-card rounded-xl h-64 flex items-center justify-center text-gray-500">
+          <div className="bg-white border border-gray-200 rounded-xl h-64 flex items-center justify-center text-gray-400">
             Машин ачааллаж байна...
           </div>
         )}
       </section>
 
-      {/* ADMIN ГАРААР НЭМСЭН МАШИНУУД */}
+      {/* МАНАЙ САНАЛ БОЛГОХ МАШИНУУД */}
       {manualVehicles.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 py-6">
           <SectionHeader title="Манай санал болгох машинууд" link="/vehicles?source=manual" />
@@ -415,9 +467,9 @@ export default function HomePage() {
       )}
 
       {/* ЗАХИАЛГЫН ЗААВАР */}
-      <section id="how" className="bg-dark-secondary py-16 mt-6">
+      <section id="how" className="bg-white border-t border-gray-200 py-16 mt-6">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-white font-bold text-2xl text-center mb-10">Захиалга өгөх заавар</h2>
+          <h2 className="text-gray-900 font-bold text-2xl text-center mb-10">Захиалга өгөх заавар</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[
               { step: '01', title: 'Машин сонгох',  desc: 'Манай сайтаас эсвэл каталогоос машинаа сонгоно' },
@@ -429,8 +481,8 @@ export default function HomePage() {
                 <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold mx-auto mb-4">
                   {item.step}
                 </div>
-                <h3 className="text-white font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-400 text-sm">{item.desc}</p>
+                <h3 className="text-gray-900 font-semibold mb-2">{item.title}</h3>
+                <p className="text-gray-500 text-sm">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -442,27 +494,26 @@ export default function HomePage() {
   )
 }
 
-// ============================================================
-// HELPER COMPONENTS
-// ============================================================
+// ── HELPER COMPONENTS ──
+
 function FeaturedCarBanner({ car }) {
   const priceMNT = car.priceMNT || car.totalPriceMNT
   const image    = car.firstPhoto || car.photos?.[0]
   return (
-    <div className="relative rounded-xl overflow-hidden bg-dark-card min-h-[400px] flex">
+    <div className="relative rounded-xl overflow-hidden bg-gray-900 min-h-[400px] flex">
       <div className="flex-1 relative">
         {image
           ? <img src={image} alt={car.manufacturer} className="w-full h-full object-cover" style={{ minHeight: '400px' }} />
-          : <div className="w-full h-full bg-dark-secondary flex items-center justify-center text-gray-600 min-h-[400px] text-6xl">🚗</div>
+          : <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-600 min-h-[400px] text-6xl">🚗</div>
         }
       </div>
       <div className="absolute right-0 top-0 bottom-0 w-72 bg-gradient-to-l from-black/95 via-black/80 to-transparent flex flex-col justify-center p-8">
         <span className="badge-red mb-3">ОНЦЛОХ МАШИН</span>
         <h2 className="text-white font-bold text-2xl leading-tight mb-2">{car.manufacturer} {car.model}</h2>
         <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-          <div><div className="text-gray-500 text-xs">ОН:</div><div className="text-white font-semibold">{car.year}</div></div>
-          <div><div className="text-gray-500 text-xs">ГҮЙЛТ:</div><div className="text-white font-semibold">{car.mileage?.toLocaleString()} км</div></div>
-          {car.fuelType && <div><div className="text-gray-500 text-xs">ТҮЛШ:</div><div className="text-white font-semibold">{car.fuelType}</div></div>}
+          <div><div className="text-gray-400 text-xs">ОН:</div><div className="text-white font-semibold">{car.year}</div></div>
+          <div><div className="text-gray-400 text-xs">ГҮЙЛТ:</div><div className="text-white font-semibold">{car.mileage?.toLocaleString()} км</div></div>
+          {car.fuelType && <div><div className="text-gray-400 text-xs">ТҮЛШ:</div><div className="text-white font-semibold">{car.fuelType}</div></div>}
         </div>
         {priceMNT && <div className="text-primary font-bold text-lg mb-4">{formatMNT(priceMNT)}</div>}
         <Link to={`/vehicles/encar/${car.id}`} className="block w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded text-center transition-colors text-sm uppercase tracking-wider">
@@ -485,9 +536,9 @@ function AdminBannerSlider({ banners }) {
     <div>
       <div className="flex items-center gap-2 mb-3">
         <span className="badge-red text-xs">ЗАРАА</span>
-        <span className="text-gray-400 text-sm">Манай зар мэдэгдэл</span>
+        <span className="text-gray-500 text-sm">Манай зар мэдэгдэл</span>
       </div>
-      <div className="relative rounded-xl overflow-hidden bg-dark-card" style={{ minHeight: '400px' }}>
+      <div className="relative rounded-xl overflow-hidden bg-gray-100 border border-gray-200" style={{ minHeight: '400px' }}>
         {cur.linkUrl
           ? <a href={cur.linkUrl} target="_blank" rel="noopener noreferrer"><img src={cur.imageUrl} alt={cur.title} className="w-full h-full object-cover" style={{ minHeight: '400px' }} /></a>
           : <img src={cur.imageUrl} alt={cur.title} className="w-full h-full object-cover" style={{ minHeight: '400px' }} />
@@ -513,8 +564,8 @@ function AdminBannerSlider({ banners }) {
 function SectionHeader({ title, link }) {
   return (
     <div className="flex justify-between items-center">
-      <h2 className="text-white font-bold text-xl">{title}</h2>
-      <Link to={link} className="text-gray-400 hover:text-white text-sm transition-colors flex items-center gap-1">
+      <h2 className="text-gray-900 font-bold text-xl">{title}</h2>
+      <Link to={link} className="text-gray-400 hover:text-gray-700 text-sm transition-colors flex items-center gap-1">
         <ChevronLeft size={16} /><ChevronRight size={16} />
       </Link>
     </div>
