@@ -273,142 +273,69 @@ export default function HomePage() {
     <div className="min-h-screen bg-dark">
       <Navbar />
 
-      {/* ============================================================
-          БРЭНД ЖАГСААЛТ — 2-3 дугаар зурган шиг accordion
-          ============================================================ */}
-      <section className="max-w-7xl mx-auto px-4 pt-6 pb-4">
-        <h2 className="text-white font-semibold text-lg mb-5">
-          Солонгос улсаас автомашин захиалга
-        </h2>
 
-        {/* Дээрх 4 том брэнд */}
-        <div className="grid grid-cols-4 gap-x-6 mb-2">
-          {TOP_BRANDS.map(brand => {
-            const isOpen = openBrand === brand.name
-            const models = getBrandModels(brand.name)
+<section className="max-w-7xl mx-auto px-4 pt-6 pb-4">
+  <h2 className="text-white font-semibold text-lg mb-5">
+    Солонгос улсаас автомашин захиалга
+  </h2>
 
-            return (
-              <div key={brand.name} className="border-b border-white/5 pb-1">
-                <button
-                  onClick={() => toggleBrand(brand.name)}
-                  className="flex justify-between items-center w-full hover:text-primary transition-colors group py-1"
+  <div className="border-t border-l border-white/10">
+    {/* Бүх брэндүүд нэг grid-д */}
+    <div className="grid grid-cols-2 md:grid-cols-4">
+      {(showAllBrands ? brands : brands.slice(0, 12)).map(brand => {
+        const isOpen = openBrand === brand.name
+        const models = getBrandModels(brand.name)
+        return (
+          <div key={brand.name} className="border-r border-b border-white/10">
+            <button
+              onClick={() => toggleBrand(brand.name)}
+              className={`flex justify-between items-center w-full px-4 py-3 hover:bg-white/5 transition-colors ${isOpen ? 'bg-white/5' : ''}`}
+            >
+              <span className={`font-semibold text-sm truncate mr-2 ${isOpen ? 'text-primary' : 'text-white'}`}>
+                {brand.name}
+              </span>
+              <span className="text-gray-400 text-xs tabular-nums flex-shrink-0">
+                {brand.count.toLocaleString()}
+              </span>
+            </button>
+
+            {/* Нээгдсэн загварууд */}
+            {isOpen && (
+              <div className="border-t border-white/10 bg-dark-secondary/30 py-2">
+                {models.slice(0, 10).map(m => (
+                  <Link
+                    key={m.name}
+                    to={`/vehicles?manufacturer=${brand.name}&modelGroup=${m.name}`}
+                    className="flex justify-between text-xs text-gray-400 hover:text-white hover:bg-white/5 transition-colors px-4 py-1.5"
+                  >
+                    <span className="truncate mr-2">{m.name}</span>
+                    <span className="text-gray-500 tabular-nums flex-shrink-0">
+                      {m.count?.toLocaleString()}
+                    </span>
+                  </Link>
+                ))}
+                <Link
+                  to={`/vehicles?manufacturer=${brand.name}`}
+                  className="block text-xs text-primary hover:underline px-4 py-2"
                 >
-                  <span className="font-bold text-white group-hover:text-primary text-left text-sm">
-                    {brand.name}
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-gray-400 text-sm tabular-nums">{brand.count.toLocaleString()}</span>
-                    {isOpen
-                      ? <ChevronUp size={12} className="text-primary flex-shrink-0" />
-                      : <ChevronDown size={12} className="text-gray-500 group-hover:text-primary flex-shrink-0" />
-                    }
-                  </div>
-                </button>
-
-                {/* Accordion — загварууд */}
-                {isOpen && (
-                  <div className="mt-1 mb-3 pl-2 border-l-2 border-primary/40 space-y-0 bg-dark-secondary/30 rounded-r py-1">
-                    {models.length > 0 ? (
-                      <>
-                        {models.map(m => (
-                          <Link
-                            key={m.name}
-                            to={`/vehicles?manufacturer=${brand.name}&modelGroup=${m.name}`}
-                            className="flex justify-between text-xs text-gray-400 hover:text-white hover:bg-white/5 transition-colors py-1 px-2 rounded"
-                          >
-                            <span>{m.name}</span>
-                            <span className="text-gray-500 tabular-nums">{m.count?.toLocaleString()}</span>
-                          </Link>
-                        ))}
-                        <Link
-                          to={`/vehicles?manufacturer=${brand.name}`}
-                          className="block text-xs text-primary hover:underline pt-1 px-2"
-                        >
-                          Бүгдийг харах →
-                        </Link>
-                      </>
-                    ) : (
-                      <Link
-                        to={`/vehicles?manufacturer=${brand.name}`}
-                        className="block text-xs text-gray-400 hover:text-white py-1 px-2"
-                      >
-                        Бүх {brand.name} →
-                      </Link>
-                    )}
-                  </div>
-                )}
+                  Бүгдийг харах →
+                </Link>
               </div>
-            )
-          })}
-        </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  </div>
 
-        {/* Бусад брэндүүд */}
-        <div className="grid grid-cols-4 gap-x-6 mt-1">
-          {VISIBLE_OTHER_BRANDS.map(brand => {
-            const isOpen = openBrand === brand.name
-            const models = getBrandModels(brand.name)
-
-            return (
-              <div key={brand.name} className="border-b border-white/5 pb-1">
-                <button
-                  onClick={() => toggleBrand(brand.name)}
-                  className="flex justify-between items-center w-full text-xs hover:text-primary transition-colors group py-1"
-                >
-                  <span className="text-gray-300 group-hover:text-primary">{brand.name}</span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-gray-500 tabular-nums">{brand.count.toLocaleString()}</span>
-                    {isOpen
-                      ? <ChevronUp size={10} className="text-primary flex-shrink-0" />
-                      : <ChevronDown size={10} className="text-gray-600 group-hover:text-primary flex-shrink-0" />
-                    }
-                  </div>
-                </button>
-
-                {isOpen && (
-                  <div className="mt-1 mb-2 pl-2 border-l-2 border-primary/40 bg-dark-secondary/30 rounded-r py-1">
-                    {models.length > 0 ? (
-                      <>
-                        {models.map(m => (
-                          <Link
-                            key={m.name}
-                            to={`/vehicles?manufacturer=${brand.name}&modelGroup=${m.name}`}
-                            className="flex justify-between text-xs text-gray-400 hover:text-white hover:bg-white/5 transition-colors py-0.5 px-2 rounded"
-                          >
-                            <span>{m.name}</span>
-                            <span className="text-gray-500 tabular-nums">{m.count?.toLocaleString()}</span>
-                          </Link>
-                        ))}
-                        <Link
-                          to={`/vehicles?manufacturer=${brand.name}`}
-                          className="block text-xs text-primary hover:underline pt-1 px-2"
-                        >
-                          Бүгдийг харах →
-                        </Link>
-                      </>
-                    ) : (
-                      <Link
-                        to={`/vehicles?manufacturer=${brand.name}`}
-                        className="block text-xs text-gray-400 hover:text-white py-0.5 px-2"
-                      >
-                        Бүх {brand.name} →
-                      </Link>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-
-        <button
-          onClick={() => setShowAllBrands(!showAllBrands)}
-          className="flex items-center gap-1 text-xs text-gray-500 hover:text-white mt-3 transition-colors"
-        >
-          {showAllBrands ? 'Хураах' : 'Бүгдийг харах'}
-          <ChevronDown size={12} className={showAllBrands ? 'rotate-180 transition-transform' : 'transition-transform'} />
-        </button>
-      </section>
-
+  <button
+    onClick={() => setShowAllBrands(!showAllBrands)}
+    className="flex items-center gap-1 text-xs text-gray-500 hover:text-white mt-3 transition-colors"
+  >
+    {showAllBrands ? 'Хураах' : 'Бүгдийг харах'}
+    <ChevronDown size={12} className={showAllBrands ? 'rotate-180 transition-transform' : 'transition-transform'} />
+  </button>
+</section>
       <div className="border-t border-white/10 my-2" />
 
       {/* ============================================================
