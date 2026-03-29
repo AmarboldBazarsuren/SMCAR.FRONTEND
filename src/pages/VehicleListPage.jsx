@@ -1,6 +1,7 @@
 // Файл: frontend/src/pages/VehicleListPage.jsx
-// Үүрэг: Encar машинуудын жагсаалт, шүүлтүүр
-// Шинэ backend params: manufacturer, modelGroup, year_min, year_max, fuelType, limit, offset
+// Үүрэг: Машинуудын жагсаалт, шүүлтүүр
+//
+// Өөрчлөлт: Түлшний нэрс монгол болсон
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -12,14 +13,20 @@ import LoadingSpinner from '../components/LoadingSpinner.jsx'
 import { getEncarVehicles, getManualVehicles } from '../services/vehicleService.js'
 
 const MANUFACTURERS = [
-  'Hyundai', 'Kia', 'Genesis', 'Chevrolet', 'Renault Korea',
+  'Hyundai', 'Kia', 'Genesis', 'Chevrolet', 'Renault',
   'BMW', 'Mercedes-Benz', 'Audi', 'Volkswagen', 'Porsche',
   'Toyota', 'Honda', 'Lexus', 'Land Rover', 'Volvo',
   'Ford', 'Jeep', 'Mini',
 ]
 
-const FUEL_TYPES = ['가솔린', '디젤', '전기', '하이브리드']
-const FUEL_LABELS = { '가솔린': 'Бензин', '디젤': 'Дизель', '전기': 'Цахилгаан', '하이브리드': 'Хибрид' }
+// Монгол нэршилтэй түлшний жагсаалт
+// API-д явуулах утга (Korean код) → дэлгэцэнд харуулах монгол нэр
+const FUEL_OPTIONS = [
+  { value: '가솔린', label: 'Бензин' },
+  { value: '디젤',  label: 'Дизель' },
+  { value: '전기',  label: 'Цахилгаан' },
+  { value: '하이브리드', label: 'Хосолмол (Гибрид)' },
+]
 
 export default function VehicleListPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -41,7 +48,6 @@ export default function VehicleListPage() {
 
   const loadVehicles = useCallback(async (newOffset = 0) => {
     setLoading(true)
-    console.log('🔍 Машин жагсаалт ачааллаж байна...', filters)
     try {
       const params = {
         ...Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== '')),
@@ -62,9 +68,7 @@ export default function VehicleListPage() {
           setVehicles(prev => [...prev, ...(data.data || [])])
         }
         setTotal(data.total || 0)
-        console.log(`✅ ${data.data?.length} машин ачааллаа (Нийт: ${data.total})`)
       } else {
-        console.error('❌ Encar машин ачааллахад алдаа:', encarRes.reason?.message)
         if (newOffset === 0) setVehicles([])
       }
 
@@ -102,6 +106,9 @@ export default function VehicleListPage() {
 
   const hasMore = offset + LIMIT < total
   const activeFilterCount = Object.values(filters).filter(v => v !== '').length
+
+  // Шүүлтүүрт сонгогдсон түлшний монгол нэр
+  const selectedFuelLabel = FUEL_OPTIONS.find(f => f.value === filters.fuelType)?.label || ''
 
   return (
     <div className="min-h-screen bg-dark">
@@ -151,7 +158,7 @@ export default function VehicleListPage() {
                 </select>
               </div>
 
-              {/* Загварын бүлэг */}
+              {/* Загвар */}
               <div>
                 <label className="text-gray-400 text-xs mb-1 block">Загвар</label>
                 <input
@@ -163,7 +170,7 @@ export default function VehicleListPage() {
                 />
               </div>
 
-              {/* Он (min) */}
+              {/* Он эхлэх */}
               <div>
                 <label className="text-gray-400 text-xs mb-1 block">Он (эхлэх)</label>
                 <input
@@ -176,7 +183,7 @@ export default function VehicleListPage() {
                 />
               </div>
 
-              {/* Он (max) */}
+              {/* Он дуусах */}
               <div>
                 <label className="text-gray-400 text-xs mb-1 block">Он (дуусах)</label>
                 <input
@@ -189,17 +196,17 @@ export default function VehicleListPage() {
                 />
               </div>
 
-              {/* Түлш */}
+              {/* Түлшний төрөл — монгол нэршилтэй */}
               <div>
-                <label className="text-gray-400 text-xs mb-1 block">Түлш</label>
+                <label className="text-gray-400 text-xs mb-1 block">Түлшний төрөл</label>
                 <select
                   value={filters.fuelType}
                   onChange={e => handleFilterChange('fuelType', e.target.value)}
                   className="input-field text-sm"
                 >
                   <option value="">Бүгд</option>
-                  {FUEL_TYPES.map(f => (
-                    <option key={f} value={f}>{FUEL_LABELS[f]}</option>
+                  {FUEL_OPTIONS.map(f => (
+                    <option key={f.value} value={f.value}>{f.label}</option>
                   ))}
                 </select>
               </div>
@@ -213,18 +220,24 @@ export default function VehicleListPage() {
           </div>
         )}
 
-        {/* Идэвхтэй шүүлтүүрийн tag-ууд */}
+        {/* Идэвхтэй шүүлтүүрийн tag-ууд — монгол нэр харуулна */}
         {activeFilterCount > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
-            {Object.entries(filters).filter(([, v]) => v !== '').map(([key, val]) => (
-              <span
-                key={key}
-                className="flex items-center gap-1 bg-primary/20 text-primary text-xs px-3 py-1 rounded-full"
-              >
-                {val}
-                <button onClick={() => handleFilterChange(key, '')} className="hover:text-white ml-1">×</button>
-              </span>
-            ))}
+            {Object.entries(filters).filter(([, v]) => v !== '').map(([key, val]) => {
+              // Түлшний кодыг монгол нэрээр орлуулах
+              const displayVal = key === 'fuelType'
+                ? (FUEL_OPTIONS.find(f => f.value === val)?.label || val)
+                : val
+              return (
+                <span
+                  key={key}
+                  className="flex items-center gap-1 bg-primary/20 text-primary text-xs px-3 py-1 rounded-full"
+                >
+                  {displayVal}
+                  <button onClick={() => handleFilterChange(key, '')} className="hover:text-white ml-1">×</button>
+                </span>
+              )
+            })}
           </div>
         )}
 
@@ -267,7 +280,6 @@ export default function VehicleListPage() {
               ))}
             </div>
 
-            {/* Цааш ачаалах */}
             {hasMore && (
               <div className="text-center mt-8">
                 <button

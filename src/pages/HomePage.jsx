@@ -1,17 +1,29 @@
 // Файл: frontend/src/pages/HomePage.jsx
-// Үүрэг: Нүүр хуудас - Banner, брэнд жагсаалт, онцлох машин
+// Үүрэг: Нүүр хуудас
+//
+// Өөрчлөлт:
+// 1. Брэнд дарахад загварууд accordion маягаар нээгддэг болсон
+// 2. Брэндийн тоо cache-с татаж харуулдаг болсон (24 цагт шинэчлэгдэнэ)
+// 3. Түлшний нэрс монгол болсон
 
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from 'lucide-react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import VehicleCard from '../components/VehicleCard.jsx'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
-import { getActiveBanners, getEncarVehicles, getManualVehicles } from '../services/vehicleService.js'
+import {
+  getActiveBanners,
+  getEncarVehicles,
+  getManualVehicles,
+  getBrandStats,
+} from '../services/vehicleService.js'
 import { formatMNT } from '../utils/formatters.js'
 
-const BRANDS_GRID = [
+// Анхны статик мэдээлэл (cache шинэчлэгдэхийн өмнө харуулна)
+// Одоогийн зурган дээрх тоонуудтай таарч байна
+const DEFAULT_BRANDS = [
   { name: 'Kia', count: 23544 },
   { name: 'Hyundai', count: 20186 },
   { name: 'Mercedes-Benz', count: 9226 },
@@ -26,21 +38,23 @@ const BRANDS_GRID = [
   { name: 'Volvo', count: 1098 },
 ]
 
-const KIA_MODELS = [
-  { name: 'Santafe', count: 3289 },
-  { name: 'Starex', count: 1381 },
-  { name: 'Ioniq5', count: 443 },
-  { name: 'Ioniq', count: 114 },
-  { name: 'Ioniq9', count: 16 },
-]
-
-const HYUNDAI_MODELS = [
-  { name: 'AVANTE', count: 2736 },
-  { name: 'Kona', count: 1145 },
-  { name: 'Venue', count: 317 },
-  { name: 'i30', count: 95 },
-  { name: 'Aslan', count: 8 },
-]
+// Анхны загварын жагсаалт (cache байхгүй үед)
+const DEFAULT_BRAND_MODELS = {
+  Kia: [
+    { name: 'Santafe', count: 3289 },
+    { name: 'Starex', count: 1381 },
+    { name: 'Ioniq5', count: 443 },
+    { name: 'Ioniq', count: 114 },
+    { name: 'Ioniq9', count: 16 },
+  ],
+  Hyundai: [
+    { name: 'AVANTE', count: 2736 },
+    { name: 'Kona', count: 1145 },
+    { name: 'Venue', count: 317 },
+    { name: 'i30', count: 95 },
+    { name: 'Aslan', count: 8 },
+  ],
+}
 
 export default function HomePage() {
   const [banners, setBanners] = useState([])
@@ -49,35 +63,47 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [showAllBrands, setShowAllBrands] = useState(false)
 
+  // Брэнд accordion state
+  const [openBrand, setOpenBrand] = useState(null) // Нээлттэй байгаа брэндийн нэр
+  const [brandStats, setBrandStats] = useState(null) // Cache-с ирсэн мэдээлэл
+  const [brands, setBrands] = useState(DEFAULT_BRANDS)
+
   useEffect(() => {
     loadData()
   }, [])
 
   const loadData = async () => {
-    console.log('🏠 Нүүр хуудас ачааллаж байна...')
     try {
-      // ⚡ Rate limit бууруулахын тулд зөвхөн 2 хүсэлт явуулна:
-      // 1. Banner (өөрийн MongoDB-аас)
-      // 2. Нэг удаагийн машины хүсэлт (нүүр хуудасны бүх хэсэгт ашиглана)
-      const [bannersRes, vehiclesRes, manualRes] = await Promise.allSettled([
+      const [bannersRes, vehiclesRes, manualRes, statsRes] = await Promise.allSettled([
         getActiveBanners(),
-        getEncarVehicles({ limit: 20 }), // Нэг хүсэлтээр 20 машин авч хуваарилна
+        getEncarVehicles({ limit: 20 }),
         getManualVehicles({ limit: 6 }),
+        getBrandStats(), // Cache-с брэнд статистик
       ])
 
       if (bannersRes.status === 'fulfilled') {
         setBanners(bannersRes.value.data || [])
-        console.log(`✅ ${bannersRes.value.data?.length} banner`)
       }
 
       if (vehiclesRes.status === 'fulfilled') {
-        const allVehicles = vehiclesRes.value.data || []
-        setFeaturedVehicles(allVehicles)
-        console.log(`✅ ${allVehicles.length} машин ачааллаа`)
+        setFeaturedVehicles(vehiclesRes.value.data || [])
       }
 
       if (manualRes.status === 'fulfilled') {
         setManualVehicles(manualRes.value.data || [])
+      }
+
+      // Cache-с брэнд статистик ирсэн бол шинэчлэх
+      if (statsRes.status === 'fulfilled' && statsRes.value.data) {
+        const stats = statsRes.value.data
+        setBrandStats(stats)
+
+        // Брэндийн жагсаалтыг cache-с шинэчлэх
+        const updatedBrands = DEFAULT_BRANDS.map(b => ({
+          ...b,
+          count: stats[b.name]?.total || b.count, // Cache-аас авна, байхгүй бол default
+        }))
+        setBrands(updatedBrands)
       }
     } catch (err) {
       console.error('❌ Нүүр хуудас алдаа:', err.message)
@@ -86,78 +112,170 @@ export default function HomePage() {
     }
   }
 
-  // 20 машиныг 3 хэсэгт хуваарилах
-  const section1 = featuredVehicles.slice(0, 5)   // Онцлох
-  const section2 = featuredVehicles.slice(5, 9)    // 4x4 жиипүүд
-  const section3 = featuredVehicles.slice(9, 13)   // Зуны гангараа
+  // Брэнд дарахад accordion toggle
+  const toggleBrand = (brandName) => {
+    setOpenBrand(prev => prev === brandName ? null : brandName)
+  }
+
+  // Брэндийн загваруудыг авах
+  const getBrandModels = (brandName) => {
+    // Cache-с авна
+    if (brandStats && brandStats[brandName]?.models) {
+      return brandStats[brandName].models.slice(0, 5)
+    }
+    // Default мэдээлэл
+    return DEFAULT_BRAND_MODELS[brandName] || []
+  }
+
+  // Нүүр хуудасны 4 гол брэнд (том нүдтэй)
+  const TOP_BRANDS = brands.slice(0, 4)
+  // Бусад брэндүүд (жижиг нүдтэй)
+  const OTHER_BRANDS = brands.slice(4)
+  const VISIBLE_OTHER_BRANDS = showAllBrands ? OTHER_BRANDS : OTHER_BRANDS.slice(0, 8)
+
+  const section1 = featuredVehicles.slice(0, 5)
+  const section2 = featuredVehicles.slice(5, 9)
+  const section3 = featuredVehicles.slice(9, 13)
 
   return (
     <div className="min-h-screen bg-dark">
       <Navbar />
 
-      {/* БРЭНД ЖАГСААЛТ */}
+      {/* ============================================================
+          БРЭНД ЖАГСААЛТ — accordion дизайн
+          ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 pt-8 pb-4">
-        <h2 className="text-white font-semibold text-xl mb-6">Солонгос улсаас автомашин захиалга</h2>
+        <h2 className="text-white font-semibold text-xl mb-6">
+          Солонгос улсаас автомашин захиалга
+        </h2>
 
-        <div className="grid grid-cols-4 gap-x-8 gap-y-2 mb-4">
-          <div>
-            <Link to="/vehicles?brand=Kia" className="flex justify-between items-baseline hover:text-primary transition-colors group">
-              <span className="font-bold text-white group-hover:text-primary">Kia</span>
-              <span className="text-gray-400 text-sm">23544</span>
-            </Link>
-            <div className="mt-1 space-y-0.5 pl-2">
-              {KIA_MODELS.map(m => (
-                <Link key={m.name} to={`/vehicles?brand=Kia&model=${m.name}`}
-                  className="flex justify-between text-sm text-gray-400 hover:text-white transition-colors">
-                  <span>{m.name}</span><span>{m.count}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
+        {/* Дээрх 4 том брэнд */}
+        <div className="grid grid-cols-4 gap-x-8 gap-y-1 mb-4">
+          {TOP_BRANDS.map(brand => {
+            const isOpen = openBrand === brand.name
+            const models = getBrandModels(brand.name)
 
-          <div>
-            <Link to="/vehicles?brand=Hyundai" className="flex justify-between items-baseline hover:text-primary transition-colors group">
-              <span className="font-bold text-white group-hover:text-primary">Hyundai</span>
-              <span className="text-gray-400 text-sm">20186</span>
-            </Link>
-            <div className="mt-1 space-y-0.5 pl-2">
-              {HYUNDAI_MODELS.map(m => (
-                <Link key={m.name} to={`/vehicles?brand=Hyundai&model=${m.name}`}
-                  className="flex justify-between text-sm text-gray-400 hover:text-white transition-colors">
-                  <span>{m.name}</span><span>{m.count}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
+            return (
+              <div key={brand.name}>
+                {/* Брэндийн нэр + тоо + accordion товч */}
+                <button
+                  onClick={() => toggleBrand(brand.name)}
+                  className="flex justify-between items-center w-full hover:text-primary transition-colors group py-0.5"
+                >
+                  <span className="font-bold text-white group-hover:text-primary text-left">
+                    {brand.name}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-gray-400 text-sm">{brand.count.toLocaleString()}</span>
+                    {isOpen
+                      ? <ChevronUp size={12} className="text-primary" />
+                      : <ChevronDown size={12} className="text-gray-500 group-hover:text-primary" />
+                    }
+                  </div>
+                </button>
 
-          <div>
-            <Link to="/vehicles?brand=Mercedes-Benz" className="flex justify-between items-baseline hover:text-primary transition-colors group">
-              <span className="font-bold text-white group-hover:text-primary">Mercedes-Benz</span>
-              <span className="text-gray-400 text-sm">9226</span>
-            </Link>
-          </div>
-
-          <div>
-            <Link to="/vehicles?brand=BMW" className="flex justify-between items-baseline hover:text-primary transition-colors group">
-              <span className="font-bold text-white group-hover:text-primary">BMW</span>
-              <span className="text-gray-400 text-sm">8707</span>
-            </Link>
-          </div>
+                {/* Загваруудын accordion */}
+                {isOpen && (
+                  <div className="mt-1 mb-2 pl-2 border-l border-primary/30 space-y-0.5 animate-in">
+                    {models.length > 0 ? (
+                      <>
+                        {models.map(m => (
+                          <Link
+                            key={m.name}
+                            to={`/vehicles?manufacturer=${brand.name}&modelGroup=${m.name}`}
+                            className="flex justify-between text-sm text-gray-400 hover:text-white transition-colors py-0.5"
+                          >
+                            <span>{m.name}</span>
+                            <span className="text-gray-500">{m.count?.toLocaleString()}</span>
+                          </Link>
+                        ))}
+                        <Link
+                          to={`/vehicles?manufacturer=${brand.name}`}
+                          className="block text-xs text-primary hover:underline pt-1"
+                        >
+                          Бүгдийг харах →
+                        </Link>
+                      </>
+                    ) : (
+                      <Link
+                        to={`/vehicles?manufacturer=${brand.name}`}
+                        className="block text-sm text-gray-400 hover:text-white py-0.5"
+                      >
+                        Бүх {brand.name} →
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
 
+        {/* Бусад брэндүүд — жижиг */}
         <div className="grid grid-cols-4 gap-x-8 gap-y-1.5">
-          {BRANDS_GRID.slice(4).map(brand => (
-            <Link key={brand.name} to={`/vehicles?brand=${brand.name}`}
-              className="flex justify-between text-sm hover:text-primary transition-colors">
-              <span className="text-gray-300">{brand.name}</span>
-              <span className="text-gray-500">{brand.count.toLocaleString()}</span>
-            </Link>
-          ))}
+          {VISIBLE_OTHER_BRANDS.map(brand => {
+            const isOpen = openBrand === brand.name
+            const models = getBrandModels(brand.name)
+
+            return (
+              <div key={brand.name}>
+                <button
+                  onClick={() => toggleBrand(brand.name)}
+                  className="flex justify-between items-center w-full text-sm hover:text-primary transition-colors group py-0.5"
+                >
+                  <span className="text-gray-300 group-hover:text-primary">{brand.name}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-gray-500">{brand.count.toLocaleString()}</span>
+                    {isOpen
+                      ? <ChevronUp size={10} className="text-primary" />
+                      : <ChevronDown size={10} className="text-gray-600 group-hover:text-primary" />
+                    }
+                  </div>
+                </button>
+
+                {/* Accordion */}
+                {isOpen && (
+                  <div className="mt-1 mb-2 pl-2 border-l border-primary/30 space-y-0.5">
+                    {models.length > 0 ? (
+                      <>
+                        {models.map(m => (
+                          <Link
+                            key={m.name}
+                            to={`/vehicles?manufacturer=${brand.name}&modelGroup=${m.name}`}
+                            className="flex justify-between text-xs text-gray-400 hover:text-white transition-colors py-0.5"
+                          >
+                            <span>{m.name}</span>
+                            <span className="text-gray-500">{m.count?.toLocaleString()}</span>
+                          </Link>
+                        ))}
+                        <Link
+                          to={`/vehicles?manufacturer=${brand.name}`}
+                          className="block text-xs text-primary hover:underline pt-1"
+                        >
+                          Бүгдийг харах →
+                        </Link>
+                      </>
+                    ) : (
+                      <Link
+                        to={`/vehicles?manufacturer=${brand.name}`}
+                        className="block text-xs text-gray-400 hover:text-white py-0.5"
+                      >
+                        Бүх {brand.name} →
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
 
-        <button onClick={() => setShowAllBrands(!showAllBrands)}
-          className="flex items-center gap-1 text-sm text-gray-400 hover:text-white mt-4 transition-colors">
-          Бүгдийг харах <ChevronDown size={14} className={showAllBrands ? 'rotate-180' : ''} />
+        <button
+          onClick={() => setShowAllBrands(!showAllBrands)}
+          className="flex items-center gap-1 text-sm text-gray-400 hover:text-white mt-4 transition-colors"
+        >
+          {showAllBrands ? 'Хураах' : 'Бүгдийг харах'}
+          <ChevronDown size={14} className={showAllBrands ? 'rotate-180 transition-transform' : 'transition-transform'} />
         </button>
       </section>
 
@@ -192,7 +310,7 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 4x4 ЖИИПҮҮД */}
+      {/* ШИНЭ МАШИНУУД */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         <SectionHeader title="Шинэ машинууд" link="/vehicles" />
         {loading ? <LoadingSpinner /> : (
@@ -204,7 +322,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* ЗУН */}
+      {/* ОНЦЛОХ МАШИНУУД */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         <SectionHeader title="Онцлох машинууд" link="/vehicles" />
         {loading ? <LoadingSpinner /> : (
@@ -259,13 +377,21 @@ function BannerSlider({ banners }) {
   const cur = banners[idx]
   return (
     <div className="relative rounded-xl overflow-hidden bg-dark-card">
-      <img src={cur.imageUrl} alt={cur.title} className="w-full object-cover" style={{ maxHeight: '500px' }}
-        onError={e => e.target.style.display = 'none'} />
+      <img
+        src={cur.imageUrl}
+        alt={cur.title}
+        className="w-full object-cover"
+        style={{ maxHeight: '500px' }}
+        onError={e => e.target.style.display = 'none'}
+      />
       {banners.length > 1 && (
         <div className="absolute bottom-4 right-6 flex gap-2">
           {banners.map((_, i) => (
-            <button key={i} onClick={() => setIdx(i)}
-              className={`w-2 h-2 rounded-full transition-colors ${i === idx ? 'bg-primary' : 'bg-white/40'}`} />
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              className={`w-2 h-2 rounded-full transition-colors ${i === idx ? 'bg-primary' : 'bg-white/40'}`}
+            />
           ))}
         </div>
       )}
@@ -281,9 +407,16 @@ function FeaturedCarBanner({ car }) {
     <div className="relative rounded-xl overflow-hidden bg-dark-card min-h-[400px] flex">
       <div className="flex-1 relative">
         {image ? (
-          <img src={image} alt={car.manufacturer} className="w-full h-full object-cover" style={{ minHeight: '400px' }} />
+          <img
+            src={image}
+            alt={car.manufacturer}
+            className="w-full h-full object-cover"
+            style={{ minHeight: '400px' }}
+          />
         ) : (
-          <div className="w-full h-full bg-dark-secondary flex items-center justify-center text-gray-600 min-h-[400px] text-6xl">🚗</div>
+          <div className="w-full h-full bg-dark-secondary flex items-center justify-center text-gray-600 min-h-[400px] text-6xl">
+            🚗
+          </div>
         )}
       </div>
       <div className="absolute right-0 top-0 bottom-0 w-72 bg-gradient-to-l from-black/95 via-black/80 to-transparent flex flex-col justify-center p-8">
@@ -300,12 +433,20 @@ function FeaturedCarBanner({ car }) {
             <div className="text-gray-500 text-xs">ГҮЙЛТ:</div>
             <div className="text-white font-semibold">{car.mileage?.toLocaleString()} км</div>
           </div>
+          {car.fuelType && (
+            <div>
+              <div className="text-gray-500 text-xs">ТҮЛШ:</div>
+              <div className="text-white font-semibold">{car.fuelType}</div>
+            </div>
+          )}
         </div>
         {priceMNT && (
           <div className="text-primary font-bold text-lg mb-4">{formatMNT(priceMNT)}</div>
         )}
-        <Link to={`/vehicles/encar/${car.id}`}
-          className="block w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded text-center transition-colors text-sm uppercase tracking-wider">
+        <Link
+          to={`/vehicles/encar/${car.id}`}
+          className="block w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded text-center transition-colors text-sm uppercase tracking-wider"
+        >
           ДЭЛГЭРЭНГҮЙ ҮЗЭХ
         </Link>
       </div>
@@ -317,7 +458,10 @@ function SectionHeader({ title, link }) {
   return (
     <div className="flex justify-between items-center">
       <h2 className="text-white font-bold text-xl">{title}</h2>
-      <Link to={link} className="text-gray-400 hover:text-white text-sm transition-colors flex items-center gap-1">
+      <Link
+        to={link}
+        className="text-gray-400 hover:text-white text-sm transition-colors flex items-center gap-1"
+      >
         <ChevronLeft size={16} /><ChevronRight size={16} />
       </Link>
     </div>
