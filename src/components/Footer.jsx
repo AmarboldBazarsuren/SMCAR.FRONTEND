@@ -42,7 +42,7 @@ export default function Footer() {
           <div>
             <h3 className="text-gray-900 font-semibold mb-3 text-sm">Холбоо барих</h3>
             <div className="space-y-2 text-sm text-gray-500">
-              <p>📞 +976 9900-0000</p>
+              <p>📞 +976 72220707</p>
               <p>✉️ info@smcar.mn</p>
               <p>📍 Улаанбаатар, Монгол</p>
             </div>
