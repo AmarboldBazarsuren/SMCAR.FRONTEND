@@ -7,7 +7,7 @@ import Footer from '../components/Footer.jsx'
 import PricingBreakdown from '../components/PricingBreakdown.jsx'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
 import { getEncarVehicleDetail } from '../services/vehicleService.js'
-import { formatMileage, formatCC } from '../utils/formatters.js'
+import { formatMileage, formatCC, formatKRW } from '../utils/formatters.js'
 
 export default function VehicleDetailPage() {
   const { id } = useParams()
@@ -16,6 +16,7 @@ export default function VehicleDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeImg, setActiveImg] = useState(0)
+  const [priceSource, setPriceSource] = useState('apicars')
 
   useEffect(() => { loadVehicle() }, [id])
 
@@ -27,6 +28,7 @@ export default function VehicleDetailPage() {
       if (data.success) {
         setVehicle(data.data)
         setPricing(data.pricing)
+        setPriceSource(data.priceSource || 'apicars')
       } else {
         setError('Машин мэдээлэл татаж чадсангүй')
       }
@@ -163,8 +165,38 @@ export default function VehicleDetailPage() {
 
             {/* Машины нэр + спек */}
             <div className="mt-6">
-              <h1 className="text-gray-900 font-bold text-2xl mb-1">{title}</h1>
+              <div className="flex items-start justify-between gap-4 mb-1">
+                <h1 className="text-gray-900 font-bold text-2xl">{title}</h1>
+                {/* Үнийн эх сурвалж харуулах */}
+                {priceSource === 'encar_direct' && (
+                  <span className="flex-shrink-0 text-xs bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-full">
+                    ✓ Encar.com үнэ
+                  </span>
+                )}
+              </div>
               <p className="text-gray-400 text-sm mb-4">ID: {vehicle.id}</p>
+
+              {/* Encar.com-д үнэ шалгах холбоос */}
+              <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 mb-5 flex items-center justify-between">
+                <div>
+                  <p className="text-blue-800 text-sm font-medium">Encar.com дээр үнэ шалгах</p>
+                  <p className="text-blue-600 text-xs mt-0.5">
+                    {vehicle.priceKRW
+                      ? `Манай үнэ: ${formatKRW(vehicle.priceKRW)}`
+                      : 'Үнэ тодорхойгүй'
+                    }
+                    {priceSource === 'encar_direct' && ' (Encar.com-оос шууд авсан)'}
+                  </p>
+                </div>
+                <a
+                  href={`https://www.encar.com/dc/dc_cardetailview.do?carid=${vehicle.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-blue-700 hover:text-blue-900 text-sm font-medium flex-shrink-0"
+                >
+                  Шалгах <ExternalLink size={13} />
+                </a>
+              </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                 {specs.map(s => (
